@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Order Management | Admin | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Order Management</h1>
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <!-- Order Stats -->
+    <div class="stats-grid">
+        <div class="stat-card" style="border-color: rgba(255, 193, 7, 0.3);">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-value" style="color: #ffc107;">{{ stats.awaiting }}</div>
+            <div class="stat-label">Awaiting Payment</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(33, 150, 243, 0.3);">
+            <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="stat-value" style="color: #64b5f6;">{{ stats.pending }}</div>
+            <div class="stat-label">Pending Verification</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(76, 175, 80, 0.3);">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-value" style="color: #81c784;">{{ stats.paid }}</div>
+            <div class="stat-label">Paid (Ready to Ship)</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(156, 39, 176, 0.3);">
+            <div class="stat-icon"><i class="fas fa-shipping-fast"></i></div>
+            <div class="stat-value" style="color: #ce93d8;">{{ stats.shipped }}</div>
+            <div class="stat-label">Shipped/Complete</div>
+        </div>
+        <div class="stat-card accent">
+            <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="stat-value">${{ "%.2f"|format(stats.revenue) }}</div>
+            <div class="stat-label">Revenue (Paid+)</div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="admin-section">
+        <h2>All Orders ({{ orders|length }})</h2>
+
+        {% if orders %}
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Item</th>
+                        <th>Buyer</th>
+                        <th>Muse</th>
+                        <th>Amount</th>
+                        <th>Shipping</th>
+                        <th>Payment</th>
+                        <th>Order Status</th>
+                        <th>Ship To</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in orders %}
+                    <tr class="order-row-{{ o['status'] }}">
+                        <td>#{{ o['id'] }}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="table-thumb">
+                                    {% if o['auction_image'].startswith('uploads/') %}
+                                    <img src="{{ url_for('static', filename=o['auction_image']) }}" alt="">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename='images/' + o['auction_image']) }}" alt="">
+                                    {% endif %}
+                                </div>
+                                <span>{{ o['auction_title'][:30] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>{{ o['buyer_name'] }}</strong>
+                            <br><small class="text-muted">{{ o['buyer_email'] }}</small>
+                        </td>
+                        <td>{{ o['muse_name'] or 'N/A' }}</td>
+                        <td class="price-cell">${{ "%.2f"|format(o['amount']) }}</td>
+                        <td>
+                            {% if o['shipping_cost'] %}
+                            ${{ "%.2f"|format(o['shipping_cost']) }}
+                            {% else %}
+                            <span class="text-muted">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ o['status'] }}">{{ o['status']|upper }}</span>
+                            {% if o['processor'] %}<br><small class="text-muted">{{ o['processor'] }}</small>{% endif %}
+                            {% if o['processor_txn'] %}<br><small class="text-muted">{{ o['processor_txn'][:16] }}</small>{% endif %}
+                        </td>
+                        <td>
+                            {% if o['shipment_status'] %}
+                            <span class="status-badge status-{{ o['shipment_status'] }}">{{ o['shipment_status']|upper }}</span>
+                            {% if o['tracking_number'] %}
+                            <br><small>{{ o['carrier'] }}: {{ o['tracking_number'] }}</small>
+                            {% endif %}
+                            {% else %}
+                            <span class="text-muted">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if o['ship_name'] %}
+                            <small>{{ o['ship_name'] }}<br>{{ o['ship_city'] }}, {{ o['ship_country'] }}</small>
+                            {% else %}
+                            <small class="text-muted">No address</small>
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell" style="flex-direction: column; gap: 0.3rem;">
+                            {% if o['status'] == 'pending' %}
+                            <!-- Mark as Paid -->
+                            <form method="POST" action="{{ url_for('admin_mark_paid', payment_id=o['id']) }}" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="processor_txn" value="">
+                                <button type="submit" class="action-btn extend" title="Mark Paid"
+                                        onclick="return confirm('Mark this payment as confirmed?')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            {% if o['status'] == 'paid' and (not o['shipment_status'] or o['shipment_status'] in ('preparing', 'awaiting_payment')) %}
+                            <!-- Ship Order -->
+                            <form method="POST" action="{{ url_for('admin_ship_order', payment_id=o['id']) }}" style="display: inline;"
+                                  onsubmit="var t = prompt('Enter tracking number:'); if(!t) return false; this.querySelector('[name=tracking_number]').value = t; return true;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="tracking_number" value="">
+                                <input type="hidden" name="carrier" value="DHL">
+                                <button type="submit" class="action-btn" title="Ship Order" style="color: #ce93d8; border-color: #ce93d8;">
+                                    <i class="fas fa-truck"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            {% if o['shipment_status'] == 'shipped' %}
+                            <!-- Mark Delivered -->
+                            <form method="POST" action="{{ url_for('admin_deliver_order', payment_id=o['id']) }}" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="action-btn extend" title="Mark Delivered"
+                                        onclick="return confirm('Mark this order as delivered?')">
+                                    <i class="fas fa-box-open"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            <a href="{{ url_for('admin_auction_bids', auction_id=o['auction_id']) }}" class="action-btn" title="View Bids">
+                                <i class="fas fa-list"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <p>No orders yet. Orders will appear here when auctions end with winning bids.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

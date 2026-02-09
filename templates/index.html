@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <header class="hero">
+        <div class="hero-bg" style="background-image: url('{{ url_for('static', filename='images/landing2.jpeg') }}');"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Panties Fan</h1>
+            <p>Your Fantasy, Worn For Real.</p>
+            <button class="cta-button"
+                onclick="document.getElementById('collection').scrollIntoView({behavior: 'smooth'})">
+                Enter The Gallery
+            </button>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-dot"></div>
+            </div>
+            <span>Scroll to Explore</span>
+        </div>
+    </header>
+
+    <section class="manifesto">
+        <div class="manifesto-text">
+            <h2>The Scent of Desire</h2>
+            <p>
+                Experience the ultimate connection. Authenticity verified. discreetly delivered.
+                Our exclusive marketplace connects admirers with their muses in the most intimate way possible.
+            </p>
+        </div>
+    </section>
+
+    <section id="collection" class="collection">
+        <div class="section-header">
+            <div>
+                <h3 class="section-title">Live Auctions</h3>
+                <span class="section-subtitle">Freshly Listed</span>
+            </div>
+            <a href="#" style="color: var(--accent-gold); font-size: 0.9rem;">View All <i
+                    class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="grid">
+            {% for item in auctions %}
+            <div class="card" id="card-{{ item['id'] }}">
+                {% if item['status'] == 'live' %}
+                <div class="live-badge">
+                    <div class="live-dot"></div> Live
+                </div>
+                {% else %}
+                <div class="ended-badge">{{ item['status']|capitalize }}</div>
+                {% endif %}
+                <div class="card-img-container">
+                    {% if item['image'].startswith('uploads/') %}
+                    <img src="{{ url_for('static', filename=item['image']) }}" alt="{{ item['title'] }}"
+                        class="card-img">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/' + item['image']) }}" alt="{{ item['title'] }}"
+                        class="card-img">
+                    {% endif %}
+                </div>
+                <div class="card-info">
+                    <h4 class="card-title">{{ item['title'] }}</h4>
+                    <p style="font-size: 0.85rem; color: #888;">Seller: <span style="color: #fff;">{{ item['seller_name'] }}</span></p>
+                    <div class="card-meta">
+                        <span><i class="far fa-clock"></i>
+                            <span class="countdown" data-ends-at="{{ item['ends_at'] }}">--</span>
+                        </span>
+                        <span class="price" id="price-{{ item['id'] }}">${{ "%.2f"|format(item['current_bid']) }}</span>
+                    </div>
+
+                    {% if item['status'] == 'live' %}
+                        {% if current_user.is_authenticated %}
+                        <div class="bid-input-row">
+                            <input type="number" class="bid-amount-input"
+                                   placeholder="${{ "%.2f"|format(item['current_bid'] + 5) }}+"
+                                   min="{{ item['current_bid'] + 5 }}" step="1"
+                                   id="input-{{ item['id'] }}">
+                            <button class="bid-btn" onclick="placeBid('{{ item['id'] }}')">Bid</button>
+                        </div>
+                        <p class="min-bid-hint" id="min-bid-{{ item['id'] }}">Min bid: ${{ "%.2f"|format(item['current_bid'] + 5) }}</p>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="bid-btn" style="display: block; text-align: center; margin-top: 1.5rem;">Sign In to Bid</a>
+                        {% endif %}
+                    {% else %}
+                        <button class="bid-btn" disabled style="margin-top: 1.5rem;">Auction Ended</button>
+                    {% endif %}
+
+                    <p id="bidder-{{ item['id'] }}"
+                        style="font-size: 0.7rem; color: var(--accent-gold); margin-top: 0.5rem; height: 1.2em;">
+                        {% if item['last_bidder_name'] %}Last: {{ item['last_bidder_name'] }}{% endif %}
+                    </p>
+
+                    {% if item['recent_bids'] %}
+                    <div class="bid-history">
+                        <h5>Recent Bids</h5>
+                        <ul class="bid-history-list" id="bid-history-{{ item['id'] }}">
+                            {% for bid in item['recent_bids'] %}
+                            <li>
+                                <span>{{ bid['bidder'] }}</span>
+                                <span class="bid-amount">${{ "%.2f"|format(bid['amount']) }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <div class="hiw-content">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 4rem;">How It Works</h2>
+            <div class="hiw-grid">
+                <div class="hiw-step">
+                    <div class="icon-circle"><i class="fas fa-search"></i></div>
+                    <h3>Discover</h3>
+                    <p>Browse our curated selection of authentic, worn items from verified sellers.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="icon-circle"><i class="fas fa-gavel"></i></div>
+                    <h3>Bid</h3>
+                    <p>Place your bid on the items that ignite your fantasy. Auctions are discreet and secure.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="icon-circle"><i class="fas fa-box-open"></i></div>
+                    <h3>Receive</h3>
+                    <p>Winning items are vacuum-sealed and shipped discreetly to your doorstep.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="packaging-section">
+        <div class="content">
+            <img src="{{ url_for('static', filename='images/logo_black.jpeg') }}"
+                style="max-width: 200px; margin-bottom: 2rem;" alt="PantiesFan Signature">
+            <h2 class="section-title" style="margin-bottom: 1rem;">The Unboxing Experience</h2>
+            <p style="color: #666; margin-bottom: 5rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Discreet, elegant, and sealed for freshness. Every delivery is a moment of anticipation crafted just for you.
+            </p>
+
+            <div class="packaging-grid">
+                <div class="pack-item">
+                    <img src="{{ url_for('static', filename='images/packaging_sets_1.jpeg') }}" alt="Premium Packaging">
+                </div>
+                <div class="pack-item">
+                    <img src="{{ url_for('static', filename='images/packaging2.jpeg') }}" alt="Discreet Shipping">
+                </div>
+                <div class="pack-item">
+                    <img src="{{ url_for('static', filename='images/packaging_sets_2.jpeg') }}" alt="Sealed Freshness">
+                </div>
+                <div class="pack-item">
+                    <img src="{{ url_for('static', filename='images/packaging3.jpeg') }}" alt="Luxury Details">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" style="background: linear-gradient(rgba(10, 10, 10, 0.7), rgba(74, 14, 22, 0.5)), url('{{ url_for('static', filename='images/landing2.jpeg') }}'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="cta-content">
+            <h2>Start Your Collection</h2>
+            <p>Access exclusive private listings not available to the public.</p>
+            {% if current_user.is_authenticated %}
+            <button class="cta-button" onclick="document.getElementById('collection').scrollIntoView({behavior: 'smooth'})"
+                style="background: var(--primary-wine); border-color: var(--primary-wine); color: #fff;">Browse Auctions</button>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="cta-button"
+                style="background: var(--primary-wine); border-color: var(--primary-wine); color: #fff; display: inline-block;">Join Now</a>
+            {% endif %}
+        </div>
+    </section>
+
+{% endblock %}

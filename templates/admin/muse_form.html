@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{% if editing %}Edit Muse{% else %}Add New Muse{% endif %} | Admin | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>{% if editing %}Edit Muse: {{ muse.display_name }}{% else %}Add New Muse{% endif %}</h1>
+        <a href="{{ url_for('admin_muses') }}" class="admin-btn"><i class="fas fa-arrow-left"></i> Back to Muses</a>
+    </div>
+
+    <div class="admin-form-card">
+        <form method="POST"
+              action="{% if editing %}{{ url_for('admin_muse_edit', muse_id=muse.id) }}{% else %}{{ url_for('admin_muse_new') }}{% endif %}"
+              enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="display_name">Display Name *</label>
+                <input type="text" id="display_name" name="display_name" required
+                       placeholder="e.g. Mistress_V, FitGirl_99"
+                       value="{{ muse.display_name if editing else request.form.get('display_name', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Bio / Description</label>
+                <textarea id="bio" name="bio" rows="4"
+                          placeholder="Tell buyers about this muse's style, specialties, personality...">{{ muse.bio if editing else request.form.get('bio', '') }}</textarea>
+            </div>
+
+            {% if editing %}
+            <div class="form-group">
+                <label for="verification">Verification Status</label>
+                <select id="verification" name="verification">
+                    {% set verifs = ['pending', 'verified', 'rejected'] %}
+                    {% for v in verifs %}
+                    <option value="{{ v }}" {% if muse.verification == v %}selected{% endif %}>{{ v|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="avatar">
+                    {% if editing %}Replace Avatar (optional){% else %}Avatar Photo{% endif %}
+                </label>
+                {% if editing and muse.avatar_url %}
+                <div class="current-image">
+                    <img src="{{ url_for('static', filename=muse.avatar_url) }}" alt="Current avatar">
+                    <span>Current avatar</span>
+                </div>
+                {% endif %}
+                <input type="file" id="avatar" name="avatar" accept="image/*">
+                <p class="form-hint">Square photo recommended. JPG, PNG, GIF, or WebP. Max 16MB.</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="admin-btn primary large">
+                    <i class="fas fa-{% if editing %}save{% else %}plus{% endif %}"></i>
+                    {% if editing %}Save Changes{% else %}Add Muse{% endif %}
+                </button>
+                <a href="{{ url_for('admin_muses') }}" class="admin-btn large">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

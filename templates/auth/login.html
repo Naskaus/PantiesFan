@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | PantiesFan.com{% endblock %}
+
+{% block content %}
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to place bids and manage your collection</p>
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required
+                       value="{{ request.form.get('email', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="auth-submit">Sign In</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Create one</a></p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account | PantiesFan.com{% endblock %}
+
+{% block content %}
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Join PantiesFan</h2>
+        <p class="subtitle">Create your account to start bidding</p>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="display_name">Display Name</label>
+                <input type="text" id="display_name" name="display_name"
+                       placeholder="How others will see you" required minlength="2" maxlength="30"
+                       value="{{ request.form.get('display_name', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required
+                       value="{{ request.form.get('email', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Minimum 8 characters" required minlength="8">
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirm">Confirm Password</label>
+                <input type="password" id="password_confirm" name="password_confirm"
+                       placeholder="Repeat your password" required minlength="8">
+            </div>
+
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required
+                       value="{{ request.form.get('dob', '') }}"
+                       max="{{ max_dob }}">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="age_confirm" name="age_confirm" required>
+                <label for="age_confirm">I confirm that I am at least 18 years of age and legally able to view adult content in my jurisdiction.</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms_confirm" name="terms_confirm" required>
+                <label for="terms_confirm">I agree to the <a href="#" style="color: var(--accent-gold);">Terms of Service</a> and <a href="#" style="color: var(--accent-gold);">Privacy Policy</a>.</label>
+            </div>
+
+            <button type="submit" class="auth-submit">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

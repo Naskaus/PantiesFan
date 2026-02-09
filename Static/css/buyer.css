@@ -1,0 +1,790 @@
+/* =============================================
+   BUYER DASHBOARD + PAYMENT STYLES — PantiesFan.com
+   ============================================= */
+
+/* --- Shared Container --- */
+.buyer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8rem 2rem 4rem;
+    min-height: 100vh;
+}
+
+/* --- Dashboard Header --- */
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    color: var(--accent-gold);
+    font-family: 'Playfair Display', serif;
+}
+
+.dashboard-greeting {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-top: 0.3rem;
+}
+
+/* --- Notifications Panel --- */
+.notifications-panel {
+    margin-bottom: 2.5rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+}
+
+.notifications-panel h3 {
+    font-size: 1rem;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.notif-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    transition: background 0.3s ease;
+}
+
+.notif-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.notif-item.unread {
+    border-left: 3px solid var(--accent-gold);
+}
+
+.notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+}
+
+.notif-auction_won .notif-icon { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); }
+.notif-payment_confirmed .notif-icon { background: rgba(76, 175, 80, 0.15); color: #81c784; }
+.notif-payment_pending .notif-icon { background: rgba(33, 150, 243, 0.15); color: #64b5f6; }
+.notif-order_shipped .notif-icon { background: rgba(156, 39, 176, 0.15); color: #ce93d8; }
+.notif-order_delivered .notif-icon { background: rgba(76, 175, 80, 0.15); color: #81c784; }
+
+.notif-content {
+    flex: 1;
+}
+
+.notif-content strong {
+    font-size: 0.85rem;
+    color: var(--text-main);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.notif-content p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.notif-time {
+    font-size: 0.7rem;
+    color: #666;
+    margin-top: 0.2rem;
+    display: block;
+}
+
+.notif-action {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.notif-action:hover {
+    color: var(--accent-gold);
+}
+
+/* --- Dashboard Tabs --- */
+.dash-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+}
+
+.dash-tab {
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dash-tab:hover {
+    color: var(--text-main);
+}
+
+.dash-tab.active {
+    color: var(--accent-gold);
+    border-bottom-color: var(--accent-gold);
+}
+
+.tab-badge {
+    background: var(--primary-wine);
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+}
+
+.dash-panel.hidden {
+    display: none;
+}
+
+/* --- Bid Cards (Active Bids) --- */
+.bid-cards, .won-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.bid-card, .won-card {
+    display: flex;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.bid-card:hover, .won-card:hover {
+    border-color: var(--accent-gold);
+    transform: translateX(3px);
+}
+
+.bid-card.winning {
+    border-left: 3px solid #81c784;
+}
+
+.bid-card.outbid {
+    border-left: 3px solid #e57373;
+}
+
+.bid-card-img, .won-card-img {
+    width: 120px;
+    min-height: 100px;
+    flex-shrink: 0;
+}
+
+.bid-card-img img, .won-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.bid-card-info, .won-card-info {
+    flex: 1;
+    padding: 1rem 1.5rem;
+}
+
+.bid-card-info h4, .won-card-info h4 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.bid-muse {
+    font-size: 0.8rem;
+    color: var(--accent-gold);
+    margin-bottom: 0.8rem;
+}
+
+.bid-card-meta {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.8rem;
+}
+
+.meta-label {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.meta-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.meta-value.price {
+    color: var(--accent-gold);
+}
+
+.bid-card-status {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.bid-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.bid-status.winning {
+    color: #81c784;
+}
+
+.bid-status.outbid {
+    color: #e57373;
+}
+
+/* --- Won Card Extras --- */
+.won-card-price {
+    font-size: 1.3rem;
+    color: var(--accent-gold);
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+}
+
+.order-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.order-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-badge.awaiting { background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+.order-badge.pending { background: rgba(33, 150, 243, 0.15); color: #64b5f6; border: 1px solid rgba(33, 150, 243, 0.3); }
+.order-badge.paid { background: rgba(76, 175, 80, 0.15); color: #81c784; border: 1px solid rgba(76, 175, 80, 0.3); }
+.order-badge.shipped { background: rgba(156, 39, 176, 0.15); color: #ce93d8; border: 1px solid rgba(156, 39, 176, 0.3); }
+.order-badge.delivered { background: rgba(76, 175, 80, 0.15); color: #81c784; border: 1px solid rgba(76, 175, 80, 0.3); }
+
+.tracking-num {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: monospace;
+}
+
+.order-detail-link {
+    font-size: 0.8rem;
+    color: var(--accent-gold);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+}
+
+.order-detail-link:hover {
+    text-decoration: underline;
+}
+
+/* --- Payment Page --- */
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.payment-summary h1 {
+    font-size: 2rem;
+    color: var(--accent-gold);
+    margin-bottom: 2rem;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Status Banners */
+.payment-status-banner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.payment-status-banner i {
+    font-size: 2rem;
+}
+
+.payment-status-banner h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.2rem;
+}
+
+.payment-status-banner p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.payment-status-banner.completed { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); color: #81c784; }
+.payment-status-banner.shipped { background: rgba(156, 39, 176, 0.1); border: 1px solid rgba(156, 39, 176, 0.3); color: #ce93d8; }
+.payment-status-banner.paid { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); color: #81c784; }
+.payment-status-banner.pending { background: rgba(33, 150, 243, 0.1); border: 1px solid rgba(33, 150, 243, 0.3); color: #64b5f6; }
+.payment-status-banner.expired { background: rgba(244, 67, 54, 0.1); border: 1px solid rgba(244, 67, 54, 0.3); color: #e57373; }
+
+/* Order Card */
+.order-card {
+    display: flex;
+    gap: 1.5rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.order-card-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.order-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-card-info h3 {
+    font-size: 1.3rem;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.order-muse {
+    color: var(--accent-gold);
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+}
+
+.order-desc {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* Price Breakdown */
+.price-breakdown {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.price-row:last-child {
+    border-bottom: none;
+}
+
+.price-row.total {
+    border-top: 1px solid var(--glass-border);
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.price-val {
+    color: var(--accent-gold);
+    font-weight: 600;
+}
+
+.payment-deadline {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+    color: #e57373;
+    padding: 0.8rem 1.2rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Tracking Section */
+.tracking-section {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.tracking-section h3 {
+    font-size: 1rem;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tracking-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.tracking-status {
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Payment Actions Panel (right side) */
+.payment-actions-panel {
+    position: sticky;
+    top: 8rem;
+}
+
+.panel-section {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.panel-section h3 {
+    font-size: 1rem;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.panel-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* Saved Address Display */
+.saved-address {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.saved-address p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0.2rem 0;
+}
+
+.saved-address p strong {
+    color: var(--text-main);
+}
+
+/* Address Toggle */
+.address-toggle {
+    color: var(--accent-gold);
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.address-toggle:hover {
+    text-decoration: underline;
+}
+
+/* Address Form */
+.address-form {
+    margin-top: 1rem;
+}
+
+.address-form h4 {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+}
+
+.form-row-inline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Payment Method Cards */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.payment-method-card {
+    display: block;
+    cursor: pointer;
+}
+
+.payment-method-card input[type="radio"] {
+    display: none;
+}
+
+.payment-method-card .method-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.payment-method-card .method-content i {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    width: 30px;
+    text-align: center;
+}
+
+.payment-method-card .method-content span {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.payment-method-card .method-content small {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-left: auto;
+}
+
+.payment-method-card input:checked + .method-content {
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.payment-method-card input:checked + .method-content i {
+    color: var(--accent-gold);
+}
+
+/* Pay Now Button */
+.pay-now-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: var(--primary-wine);
+    border: none;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.pay-now-btn:hover {
+    background: var(--primary-wine-light);
+}
+
+/* Status Timeline */
+.status-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 0;
+}
+
+.timeline-step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 0;
+    position: relative;
+}
+
+.timeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: calc(0.8rem + 18px);
+    width: 1px;
+    height: calc(100% - 18px);
+    background: var(--glass-border);
+}
+
+.timeline-step.done:not(:last-child)::after {
+    background: #81c784;
+}
+
+.step-dot {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    background: transparent;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-step.done .step-dot {
+    border-color: #81c784;
+    background: #81c784;
+}
+
+.step-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.timeline-step.done .step-text {
+    color: var(--text-main);
+}
+
+/* --- Address Panel (Dashboard) --- */
+.address-panel {
+    max-width: 600px;
+}
+
+.address-panel h3 {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+}
+
+/* --- Empty State (reuse admin's) --- */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .buyer-container {
+        padding: 6rem 1rem 2rem;
+    }
+
+    .payment-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-actions-panel {
+        position: static;
+    }
+
+    .order-card {
+        flex-direction: column;
+    }
+
+    .order-card-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .bid-card, .won-card {
+        flex-direction: column;
+    }
+
+    .bid-card-img, .won-card-img {
+        width: 100%;
+        height: 150px;
+    }
+
+    .bid-card-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-row-inline {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-tabs {
+        gap: 0;
+    }
+
+    .dash-tab {
+        padding: 0.8rem 1rem;
+        font-size: 0.7rem;
+    }
+}

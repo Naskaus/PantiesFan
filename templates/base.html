@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PantiesFan.com | Your Fantasy, Worn for Real{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <nav>
+        <a href="{{ url_for('home') }}" class="logo">PANTIESFAN</a>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}#collection">Auctions</a>
+            <a href="{{ url_for('home') }}#how-it-works">How It Works</a>
+            <a href="#">Sell</a>
+            <a href="#">About Us</a>
+        </div>
+        <div class="nav-auth">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('buyer_dashboard') }}" class="nav-dash-link">
+                    <i class="fas fa-th-large"></i> Dashboard
+                    <span class="notif-dot" id="nav-notif-dot" style="display:none;"></span>
+                </a>
+                {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}" style="color: var(--accent-gold);">
+                    <i class="fas fa-cog"></i> Admin
+                </a>
+                {% endif %}
+                <span class="user-greeting">{{ current_user.display_name }}</span>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="cta-button">Sign In</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" style="position: fixed; top: 100px; right: 20px; z-index: 9999; max-width: 400px;">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 4000);
+    </script>
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <span class="footer-logo">PANTIESFAN</span>
+        <div class="footer-links">
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+            <a href="#">Support</a>
+            <a href="#">Sellers</a>
+        </div>
+        <p class="copyright">&copy; 2026 PantiesFan.com. All rights reserved. 18+</p>
+    </footer>
+
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    {% if current_user.is_authenticated %}
+    <script>
+    // Check for unread notifications
+    (function() {
+        fetch('/api/notifications/count')
+            .then(r => r.json())
+            .then(data => {
+                if (data.count > 0) {
+                    const dot = document.getElementById('nav-notif-dot');
+                    if (dot) dot.style.display = 'block';
+                }
+            })
+            .catch(() => {});
+    })();
+    </script>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

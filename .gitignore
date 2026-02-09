@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# Database
+*.db
+
+# Environment
+.env
+
+# Deployment artifacts
+deploy.tar.gz
+deploy_pantiesfan.tar.gz
+
+# User uploads (tracked by app, not git)
+Static/uploads/*
+!Static/uploads/.gitkeep
+
+# IDE / OS
+.claude/
+.vscode/
+*.swp
+*.swo
+nul
+cookies.txt
+
+# Temp / Dev
+*.output
+PLAN_readable.tmp

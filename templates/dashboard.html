@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/buyer.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="buyer-container">
+    <div class="dashboard-header">
+        <h1>My Dashboard</h1>
+        <p class="dashboard-greeting">Welcome back, {{ current_user.display_name }}</p>
+    </div>
+
+    <!-- Notifications -->
+    {% if notifications %}
+    <div class="notifications-panel">
+        <h3><i class="fas fa-bell"></i> Recent Notifications</h3>
+        <div class="notif-list">
+            {% for n in notifications %}
+            <div class="notif-item {% if not n['is_read'] %}unread{% endif %} notif-{{ n['type'] }}">
+                <div class="notif-icon">
+                    {% if n['type'] == 'auction_won' %}<i class="fas fa-trophy"></i>
+                    {% elif n['type'] == 'payment_confirmed' %}<i class="fas fa-check-circle"></i>
+                    {% elif n['type'] == 'order_shipped' %}<i class="fas fa-shipping-fast"></i>
+                    {% elif n['type'] == 'order_delivered' %}<i class="fas fa-gift"></i>
+                    {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+                </div>
+                <div class="notif-content">
+                    <strong>{{ n['title'] }}</strong>
+                    <p>{{ n['message'] }}</p>
+                    <span class="notif-time">{{ n['created_at'][:16] }}</span>
+                </div>
+                {% if n['link'] %}
+                <a href="{{ n['link'] }}" class="notif-action"><i class="fas fa-arrow-right"></i></a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Dashboard Tabs -->
+    <div class="dash-tabs">
+        <button class="dash-tab active" onclick="showTab('bids')">
+            <i class="fas fa-gavel"></i> Active Bids
+            {% if active_bids %}<span class="tab-badge">{{ active_bids|length }}</span>{% endif %}
+        </button>
+        <button class="dash-tab" onclick="showTab('won')">
+            <i class="fas fa-trophy"></i> Won Auctions
+            {% if won_auctions %}<span class="tab-badge">{{ won_auctions|length }}</span>{% endif %}
+        </button>
+        <button class="dash-tab" onclick="showTab('history')">
+            <i class="fas fa-history"></i> Bid History
+        </button>
+        <button class="dash-tab" onclick="showTab('address')">
+            <i class="fas fa-map-marker-alt"></i> Shipping
+        </button>
+    </div>
+
+    <!-- TAB: Active Bids -->
+    <div class="dash-panel" id="tab-bids">
+        {% if active_bids %}
+        <div class="bid-cards">
+            {% for b in active_bids %}
+            <div class="bid-card {% if b['current_bidder_id'] == current_user.id %}winning{% else %}outbid{% endif %}">
+                <div class="bid-card-img">
+                    {% if b['image'].startswith('uploads/') %}
+                    <img src="{{ url_for('static', filename=b['image']) }}" alt="">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/' + b['image']) }}" alt="">
+                    {% endif %}
+                </div>
+                <div class="bid-card-info">
+                    <h4>{{ b['title'] }}</h4>
+                    <p class="bid-muse">by {{ b['muse_name'] or 'Unknown' }}</p>
+                    <div class="bid-card-meta">
+                        <div>
+                            <span class="meta-label">Your Bid</span>
+                            <span class="meta-value">${{ "%.2f"|format(b['amount']) }}</span>
+                        </div>
+                        <div>
+                            <span class="meta-label">Current Price</span>
+                            <span class="meta-value price">${{ "%.2f"|format(b['current_bid']) }}</span>
+                        </div>
+                        <div>
+                            <span class="meta-label">Time Left</span>
+                            <span class="meta-value"><span class="countdown" data-ends-at="{{ b['ends_at'] }}">--</span></span>
+                        </div>
+                    </div>
+                    <div class="bid-card-status">
+                        {% if b['current_bidder_id'] == current_user.id %}
+                        <span class="bid-status winning"><i class="fas fa-check-circle"></i> You're Winning!</span>
+                        {% else %}
+                        <span class="bid-status outbid"><i class="fas fa-exclamation-circle"></i> Outbid</span>
+                        <a href="{{ url_for('home') }}#auction-{{ b['auction_id'] }}" class="admin-btn small primary">Bid Again</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-gavel"></i>
+            <p>No active bids. Start bidding on live auctions!</p>
+            <a href="{{ url_for('home') }}" class="admin-btn primary">Browse Auctions</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- TAB: Won Auctions -->
+    <div class="dash-panel hidden" id="tab-won">
+        {% if won_auctions %}
+        <div class="won-cards">
+            {% for w in won_auctions %}
+            <div class="won-card">
+                <div class="won-card-img">
+                    {% if w['image'].startswith('uploads/') %}
+                    <img src="{{ url_for('static', filename=w['image']) }}" alt="">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/' + w['image']) }}" alt="">
+                    {% endif %}
+                </div>
+                <div class="won-card-info">
+                    <h4>{{ w['title'] }}</h4>
+                    <p class="bid-muse">by {{ w['muse_name'] or 'Unknown' }}</p>
+                    <div class="won-card-price">${{ "%.2f"|format(w['current_bid']) }}</div>
+
+                    <!-- Order Status -->
+                    <div class="order-status-bar">
+                        {% if w['payment_status'] == 'awaiting_payment' %}
+                        <span class="order-badge awaiting">
+                            <i class="fas fa-clock"></i> Awaiting Payment
+                        </span>
+                        <a href="{{ url_for('payment_page', token=w['payment_token']) }}" class="admin-btn small primary">Pay Now</a>
+                        {% elif w['payment_status'] == 'pending' %}
+                        <span class="order-badge pending">
+                            <i class="fas fa-hourglass-half"></i> Payment Processing
+                        </span>
+                        {% elif w['payment_status'] == 'paid' %}
+                        <span class="order-badge paid">
+                            <i class="fas fa-box"></i> Preparing to Ship
+                        </span>
+                        {% elif w['shipment_status'] == 'shipped' %}
+                        <span class="order-badge shipped">
+                            <i class="fas fa-shipping-fast"></i> Shipped
+                        </span>
+                        {% if w['tracking_number'] %}
+                        <span class="tracking-num">{{ w['carrier'] }}: {{ w['tracking_number'] }}</span>
+                        {% endif %}
+                        {% elif w['payment_status'] == 'completed' %}
+                        <span class="order-badge delivered">
+                            <i class="fas fa-check-circle"></i> Delivered
+                        </span>
+                        {% else %}
+                        <span class="order-badge">{{ (w['payment_status'] or 'Ended')|capitalize }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if w['payment_token'] %}
+                    <a href="{{ url_for('payment_page', token=w['payment_token']) }}" class="order-detail-link">
+                        View Order Details <i class="fas fa-arrow-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-trophy"></i>
+            <p>You haven't won any auctions yet. Keep bidding!</p>
+            <a href="{{ url_for('home') }}" class="admin-btn primary">Browse Auctions</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- TAB: Bid History -->
+    <div class="dash-panel hidden" id="tab-history">
+        {% if bid_history %}
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Auction</th>
+                        <th>Your Bid</th>
+                        <th>Current Price</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in bid_history %}
+                    <tr>
+                        <td><strong>{{ h['title'] }}</strong></td>
+                        <td class="price-cell">${{ "%.2f"|format(h['amount']) }}</td>
+                        <td>${{ "%.2f"|format(h['current_bid']) }}</td>
+                        <td>
+                            {% if h['auction_status'] == 'live' %}
+                            <span class="status-badge status-live">LIVE</span>
+                            {% elif h['is_winning'] %}
+                            <span class="status-badge status-live">WON</span>
+                            {% else %}
+                            <span class="status-badge status-ended">OUTBID</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted">{{ h['placed_at'][:16] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-history"></i>
+            <p>No bid history yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- TAB: Shipping Address -->
+    <div class="dash-panel hidden" id="tab-address">
+        <div class="address-panel">
+            <h3>Default Shipping Address</h3>
+            {% if address %}
+            <div class="saved-address">
+                <p><strong>{{ address['full_name'] }}</strong></p>
+                <p>{{ address['address_line1'] }}</p>
+                {% if address['address_line2'] %}<p>{{ address['address_line2'] }}</p>{% endif %}
+                <p>{{ address['city'] }}{% if address['state'] %}, {{ address['state'] }}{% endif %} {{ address['postal_code'] }}</p>
+                <p>{{ address['country'] }}</p>
+                {% if address['phone'] %}<p><i class="fas fa-phone"></i> {{ address['phone'] }}</p>{% endif %}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('dashboard_save_address') }}" class="address-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <h4>{% if address %}Update{% else %}Add{% endif %} Address</h4>
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="full_name" required value="{{ address['full_name'] if address else '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Address Line 1 *</label>
+                    <input type="text" name="address_line1" required value="{{ address['address_line1'] if address else '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Address Line 2</label>
+                    <input type="text" name="address_line2" value="{{ address['address_line2'] if address else '' }}">
+                </div>
+                <div class="form-row-inline">
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input type="text" name="city" required value="{{ address['city'] if address else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" name="state" value="{{ address['state'] if address else '' }}">
+                    </div>
+                </div>
+                <div class="form-row-inline">
+                    <div class="form-group">
+                        <label>Postal Code *</label>
+                        <input type="text" name="postal_code" required value="{{ address['postal_code'] if address else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Country Code *</label>
+                        <input type="text" name="country" required maxlength="3" value="{{ address['country'] if address else '' }}" placeholder="US" style="text-transform: uppercase;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" value="{{ address['phone'] if address else '' }}">
+                </div>
+                <button type="submit" class="admin-btn primary">Save Address</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showTab(name) {
+    // Hide all panels
+    document.querySelectorAll('.dash-panel').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+
+    // Show selected
+    document.getElementById('tab-' + name).classList.remove('hidden');
+    event.currentTarget.classList.add('active');
+}
+
+// Auto-select tab based on URL hash
+if (window.location.hash) {
+    const tab = window.location.hash.replace('#', '');
+    const btn = document.querySelector(`.dash-tab[onclick*="${tab}"]`);
+    if (btn) btn.click();
+}
+</script>
+{% endblock %}

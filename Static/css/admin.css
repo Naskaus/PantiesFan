@@ -1,0 +1,705 @@
+/* =============================================
+   ADMIN PANEL STYLES — PantiesFan.com
+   ============================================= */
+
+/* --- Container --- */
+.admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 8rem 2rem 4rem;
+    min-height: 100vh;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.admin-header h1 {
+    font-size: 2.2rem;
+    color: var(--accent-gold);
+    font-family: 'Playfair Display', serif;
+}
+
+.admin-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+/* --- Buttons --- */
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+    text-decoration: none;
+}
+
+.admin-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.admin-btn.primary {
+    background: var(--primary-wine);
+    border-color: var(--primary-wine);
+}
+
+.admin-btn.primary:hover {
+    background: var(--primary-wine-light);
+    border-color: var(--primary-wine-light);
+    color: #fff;
+}
+
+.admin-btn.small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+}
+
+.admin-btn.large {
+    padding: 0.9rem 2rem;
+    font-size: 0.85rem;
+}
+
+/* --- Stats Grid --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--accent-gold);
+    transform: translateY(-2px);
+}
+
+.stat-card.live {
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.stat-card.live .stat-value {
+    color: #81c784;
+}
+
+.stat-card.accent {
+    border-color: rgba(212, 175, 55, 0.3);
+}
+
+.stat-card.accent .stat-value {
+    color: var(--accent-gold);
+}
+
+.stat-icon {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+}
+
+/* --- Bid Summary Row (auction bids page) --- */
+.bid-summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* --- Tables --- */
+.admin-section {
+    margin-bottom: 3rem;
+}
+
+.admin-section h2 {
+    font-size: 1.5rem;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.admin-table th {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--glass-border);
+    white-space: nowrap;
+}
+
+.admin-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    color: var(--text-main);
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-table tbody tr.row-live {
+    border-left: 3px solid #81c784;
+}
+
+.admin-table tbody tr.row-ended {
+    border-left: 3px solid #666;
+    opacity: 0.7;
+}
+
+.admin-table tbody tr.row-draft {
+    border-left: 3px solid var(--accent-gold);
+    opacity: 0.8;
+}
+
+.admin-table tbody tr.row-winning {
+    background: rgba(212, 175, 55, 0.05);
+}
+
+/* Table thumbnails */
+.table-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.table-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Price cell */
+.price-cell {
+    color: var(--accent-gold);
+    font-weight: 600;
+}
+
+/* Actions cell */
+.actions-cell {
+    white-space: nowrap;
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.75rem;
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+}
+
+.action-btn.edit:hover {
+    color: #64b5f6;
+    border-color: #64b5f6;
+}
+
+.action-btn.extend:hover {
+    color: #81c784;
+    border-color: #81c784;
+}
+
+.action-btn.danger:hover {
+    color: #e57373;
+    border-color: #e57373;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.status-live {
+    background: rgba(76, 175, 80, 0.15);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-draft {
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--accent-gold);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.status-ended {
+    background: rgba(255, 255, 255, 0.05);
+    color: #999;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-paid {
+    background: rgba(33, 150, 243, 0.15);
+    color: #64b5f6;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.status-shipped {
+    background: rgba(156, 39, 176, 0.15);
+    color: #ce93d8;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.status-completed {
+    background: rgba(76, 175, 80, 0.15);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-cancelled {
+    background: rgba(244, 67, 54, 0.15);
+    color: #e57373;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* --- Admin Forms --- */
+.admin-form-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 2.5rem;
+    max-width: 800px;
+}
+
+.admin-form-card .form-group {
+    margin-bottom: 1.8rem;
+}
+
+.admin-form-card textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+}
+
+.admin-form-card textarea:focus {
+    border-color: var(--accent-gold);
+}
+
+.admin-form-card textarea::placeholder {
+    color: #666;
+}
+
+.form-row {
+    margin-bottom: 0;
+}
+
+.form-row.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+/* Current image preview */
+.current-image {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+}
+
+.current-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.current-image span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* File input styling */
+.admin-form-card input[type="file"] {
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--glass-border);
+    color: var(--text-muted);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.admin-form-card input[type="file"]:hover {
+    border-color: var(--accent-gold);
+}
+
+/* --- Muse Cards (admin muse list) --- */
+.muse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.muse-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.muse-card:hover {
+    border-color: var(--accent-gold);
+    transform: translateY(-3px);
+}
+
+.muse-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.muse-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid var(--glass-border);
+}
+
+.muse-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+.avatar-placeholder.large {
+    width: 120px;
+    height: 120px;
+    font-size: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+}
+
+.muse-info h3 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.muse-bio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.muse-stats {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 1rem;
+}
+
+.muse-stats > div {
+    text-align: center;
+    flex: 1;
+}
+
+.muse-stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.muse-stat-label {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.muse-card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* --- Muse Profile (public page) --- */
+.muse-profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8rem 2rem 4rem;
+    min-height: 100vh;
+}
+
+.muse-profile-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.muse-profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid var(--accent-gold);
+}
+
+.muse-profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.muse-profile-info h1 {
+    font-size: 2.5rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--accent-gold);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.muse-profile-bio {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+}
+
+.muse-profile-stats {
+    display: flex;
+    gap: 2.5rem;
+}
+
+.muse-profile-stat {
+    text-align: center;
+}
+
+.muse-profile-stat .stat-num {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.muse-profile-stat .stat-text {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.muse-auctions-section {
+    padding-bottom: 4rem;
+}
+
+/* --- Empty State --- */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Utility --- */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-danger {
+    color: #e57373 !important;
+}
+
+.countdown-mini {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: #81c784;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 6rem 1rem 2rem;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-row.two-col {
+        grid-template-columns: 1fr;
+    }
+
+    .muse-profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .muse-profile-stats {
+        justify-content: center;
+    }
+
+    .admin-table {
+        font-size: 0.75rem;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 0.5rem;
+    }
+
+    .muse-grid {
+        grid-template-columns: 1fr;
+    }
+}

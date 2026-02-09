@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Bids for {{ auction['title'] }} | Admin | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <div>
+            <h1>Bid History</h1>
+            <p class="admin-subtitle">{{ auction['title'] }} &mdash; by {{ auction['muse_name'] or 'Unknown' }}</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <!-- Auction Summary -->
+    <div class="bid-summary-row">
+        <div class="stat-card">
+            <div class="stat-value">
+                <span class="status-badge status-{{ auction['status'] }}">{{ auction['status']|upper }}</span>
+            </div>
+            <div class="stat-label">Status</div>
+        </div>
+        <div class="stat-card accent">
+            <div class="stat-value">${{ "%.2f"|format(auction['current_bid'] or auction['starting_bid']) }}</div>
+            <div class="stat-label">Current Bid</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${{ "%.2f"|format(auction['starting_bid']) }}</div>
+            <div class="stat-label">Starting Bid</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ auction['bid_count'] }}</div>
+            <div class="stat-label">Total Bids</div>
+        </div>
+    </div>
+
+    <!-- Bids Table -->
+    <div class="admin-section">
+        <h2>All Bids ({{ bids|length }})</h2>
+        {% if bids %}
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Bidder</th>
+                        <th>Email</th>
+                        <th>Amount</th>
+                        <th>Winning?</th>
+                        <th>Placed At</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bids %}
+                    <tr class="{% if b['is_winning'] %}row-winning{% endif %}">
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ b['bidder_name'] }}</strong></td>
+                        <td>{{ b['bidder_email'] }}</td>
+                        <td class="price-cell">${{ "%.2f"|format(b['amount']) }}</td>
+                        <td>
+                            {% if b['is_winning'] %}
+                            <span class="status-badge status-live">WINNING</span>
+                            {% else %}
+                            <span class="text-muted">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ b['placed_at'] }}</td>
+                        <td class="text-muted">{{ b['ip_address'] or '&mdash;' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-gavel"></i>
+            <p>No bids placed yet on this auction.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

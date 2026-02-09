@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Payment | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/buyer.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="buyer-container">
+
+    {% if payment['status'] == 'completed' %}
+    <!-- COMPLETED STATE -->
+    <div class="payment-status-banner completed">
+        <i class="fas fa-check-circle"></i>
+        <div>
+            <h2>Order Complete!</h2>
+            <p>This order has been delivered. Thank you for your purchase!</p>
+        </div>
+    </div>
+    {% elif payment['status'] == 'shipped' %}
+    <div class="payment-status-banner shipped">
+        <i class="fas fa-shipping-fast"></i>
+        <div>
+            <h2>Your Order Has Shipped!</h2>
+            {% if shipment and shipment['tracking_number'] %}
+            <p>Tracking: <strong>{{ shipment['tracking_number'] }}</strong> via {{ shipment['carrier'] }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% elif payment['status'] == 'paid' %}
+    <div class="payment-status-banner paid">
+        <i class="fas fa-box"></i>
+        <div>
+            <h2>Payment Confirmed</h2>
+            <p>Your item is being prepared for shipping. You'll be notified when it ships!</p>
+        </div>
+    </div>
+    {% elif payment['status'] == 'pending' %}
+    <div class="payment-status-banner pending">
+        <i class="fas fa-hourglass-half"></i>
+        <div>
+            <h2>Payment Processing</h2>
+            <p>Your payment is being verified. You'll be notified once confirmed.</p>
+        </div>
+    </div>
+    {% elif expired %}
+    <div class="payment-status-banner expired">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div>
+            <h2>Payment Window Expired</h2>
+            <p>The {{ PAYMENT_WINDOW_HOURS|default(48) }}-hour payment window has passed. Please contact support.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="payment-layout">
+        <!-- Left: Order Summary -->
+        <div class="payment-summary">
+            <h1>{% if payment['status'] == 'awaiting_payment' %}Complete Your Payment{% else %}Order Details{% endif %}</h1>
+
+            <div class="order-card">
+                <div class="order-card-image">
+                    {% if auction['image'].startswith('uploads/') %}
+                    <img src="{{ url_for('static', filename=auction['image']) }}" alt="{{ auction['title'] }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/' + auction['image']) }}" alt="{{ auction['title'] }}">
+                    {% endif %}
+                </div>
+                <div class="order-card-info">
+                    <h3>{{ auction['title'] }}</h3>
+                    <p class="order-muse">by {{ auction['muse_name'] or 'Unknown' }}</p>
+                    {% if auction['description'] %}
+                    <p class="order-desc">{{ auction['description'][:200] }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Winning Bid</span>
+                    <span class="price-val">${{ "%.2f"|format(payment['amount']) }}</span>
+                </div>
+                {% if shipment %}
+                <div class="price-row">
+                    <span>Shipping ({{ shipment['carrier'] }})</span>
+                    <span class="price-val">${{ "%.2f"|format(shipment['shipping_cost'] or 0) }}</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total</span>
+                    <span class="price-val">${{ "%.2f"|format(payment['amount'] + (shipment['shipping_cost'] or 0)) }}</span>
+                </div>
+                {% elif address %}
+                {% set ship_cost = shipping_rates.get(address['country'], shipping_rates['DEFAULT']) %}
+                <div class="price-row">
+                    <span>Estimated Shipping (DHL to {{ address['country'] }})</span>
+                    <span class="price-val">${{ "%.2f"|format(ship_cost) }}</span>
+                </div>
+                <div class="price-row total">
+                    <span>Estimated Total</span>
+                    <span class="price-val">${{ "%.2f"|format(payment['amount'] + ship_cost) }}</span>
+                </div>
+                {% else %}
+                <div class="price-row">
+                    <span>Shipping</span>
+                    <span class="price-val text-muted">Add address to calculate</span>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if payment['status'] == 'awaiting_payment' and not expired %}
+            <div class="payment-deadline">
+                <i class="fas fa-clock"></i>
+                Payment deadline: <span class="countdown" data-ends-at="{{ deadline }}">--</span>
+            </div>
+            {% endif %}
+
+            <!-- Tracking Info -->
+            {% if shipment and shipment['tracking_number'] %}
+            <div class="tracking-section">
+                <h3><i class="fas fa-truck"></i> Shipping Tracking</h3>
+                <div class="tracking-info">
+                    <div class="tracking-row">
+                        <span>Carrier</span>
+                        <span>{{ shipment['carrier'] }}</span>
+                    </div>
+                    <div class="tracking-row">
+                        <span>Tracking Number</span>
+                        <span><strong>{{ shipment['tracking_number'] }}</strong></span>
+                    </div>
+                    <div class="tracking-row">
+                        <span>Status</span>
+                        <span class="tracking-status status-{{ shipment['status'] }}">{{ shipment['status']|upper }}</span>
+                    </div>
+                    {% if shipment['shipped_at'] %}
+                    <div class="tracking-row">
+                        <span>Shipped</span>
+                        <span>{{ shipment['shipped_at'][:16] }}</span>
+                    </div>
+                    {% endif %}
+                    {% if shipment['delivered_at'] %}
+                    <div class="tracking-row">
+                        <span>Delivered</span>
+                        <span>{{ shipment['delivered_at'][:16] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right: Payment Actions -->
+        <div class="payment-actions-panel">
+            {% if payment['status'] == 'awaiting_payment' and not expired %}
+
+            <!-- Shipping Address -->
+            <div class="panel-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
+                {% if address %}
+                <div class="saved-address">
+                    <p><strong>{{ address['full_name'] }}</strong></p>
+                    <p>{{ address['address_line1'] }}</p>
+                    {% if address['address_line2'] %}<p>{{ address['address_line2'] }}</p>{% endif %}
+                    <p>{{ address['city'] }}{% if address['state'] %}, {{ address['state'] }}{% endif %} {{ address['postal_code'] }}</p>
+                    <p>{{ address['country'] }}</p>
+                    {% if address['phone'] %}<p><i class="fas fa-phone"></i> {{ address['phone'] }}</p>{% endif %}
+                </div>
+                {% endif %}
+
+                <details {% if not address %}open{% endif %}>
+                    <summary class="address-toggle">{% if address %}Change Address{% else %}Add Shipping Address{% endif %}</summary>
+                    <form method="POST" action="{{ url_for('payment_save_address', token=payment['payment_token']) }}" class="address-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" name="full_name" required value="{{ address['full_name'] if address else '' }}" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Address Line 1 *</label>
+                            <input type="text" name="address_line1" required value="{{ address['address_line1'] if address else '' }}" placeholder="123 Main St">
+                        </div>
+                        <div class="form-group">
+                            <label>Address Line 2</label>
+                            <input type="text" name="address_line2" value="{{ address['address_line2'] if address else '' }}" placeholder="Apt 4B">
+                        </div>
+                        <div class="form-row-inline">
+                            <div class="form-group">
+                                <label>City *</label>
+                                <input type="text" name="city" required value="{{ address['city'] if address else '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label>State</label>
+                                <input type="text" name="state" value="{{ address['state'] if address else '' }}">
+                            </div>
+                        </div>
+                        <div class="form-row-inline">
+                            <div class="form-group">
+                                <label>Postal Code *</label>
+                                <input type="text" name="postal_code" required value="{{ address['postal_code'] if address else '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label>Country Code * (US, GB, JP...)</label>
+                                <input type="text" name="country" required maxlength="3" value="{{ address['country'] if address else '' }}" placeholder="US" style="text-transform: uppercase;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" name="phone" value="{{ address['phone'] if address else '' }}" placeholder="+1 555-1234">
+                        </div>
+                        <button type="submit" class="admin-btn primary">Save Address</button>
+                    </form>
+                </details>
+            </div>
+
+            <!-- Payment Methods -->
+            {% if address %}
+            <div class="panel-section">
+                <h3><i class="fas fa-credit-card"></i> Select Payment Method</h3>
+                <p class="panel-note">Choose your preferred payment method. You will be redirected to complete payment.</p>
+
+                <form method="POST" action="{{ url_for('payment_confirm_method', token=payment['payment_token']) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="payment-methods">
+                        <label class="payment-method-card">
+                            <input type="radio" name="method" value="card" checked>
+                            <div class="method-content">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Credit Card</span>
+                                <small>via CCBill (Secure)</small>
+                            </div>
+                        </label>
+
+                        <label class="payment-method-card">
+                            <input type="radio" name="method" value="crypto">
+                            <div class="method-content">
+                                <i class="fab fa-bitcoin"></i>
+                                <span>Cryptocurrency</span>
+                                <small>BTC, ETH, USDT</small>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="pay-now-btn">
+                        <i class="fas fa-lock"></i> Proceed to Payment
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            {% elif payment['status'] in ('pending', 'paid') %}
+            <div class="panel-section">
+                <h3><i class="fas fa-info-circle"></i> What's Next?</h3>
+                <div class="status-timeline">
+                    <div class="timeline-step {% if payment['status'] in ('pending', 'paid') %}done{% endif %}">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Payment Submitted</div>
+                    </div>
+                    <div class="timeline-step {% if payment['status'] == 'paid' %}done{% endif %}">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Payment Confirmed</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Item Prepared</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Shipped</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Delivered</div>
+                    </div>
+                </div>
+            </div>
+
+            {% elif payment['status'] == 'shipped' %}
+            <div class="panel-section">
+                <h3><i class="fas fa-info-circle"></i> Order Progress</h3>
+                <div class="status-timeline">
+                    <div class="timeline-step done">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Payment Confirmed</div>
+                    </div>
+                    <div class="timeline-step done">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Item Prepared</div>
+                    </div>
+                    <div class="timeline-step done">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Shipped</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Delivered</div>
+                    </div>
+                </div>
+            </div>
+
+            {% elif payment['status'] == 'completed' %}
+            <div class="panel-section">
+                <h3><i class="fas fa-check-circle"></i> Complete!</h3>
+                <div class="status-timeline">
+                    <div class="timeline-step done">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Payment Confirmed</div>
+                    </div>
+                    <div class="timeline-step done">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Item Prepared</div>
+                    </div>
+                    <div class="timeline-step done">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Shipped</div>
+                    </div>
+                    <div class="timeline-step done">
+                        <div class="step-dot"></div>
+                        <div class="step-text">Delivered</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('home') }}" class="pay-now-btn" style="margin-top: 2rem; display: block; text-align: center;">
+                    Browse More Auctions
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

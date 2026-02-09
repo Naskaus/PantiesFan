@@ -1,0 +1,7 @@
+flask
+gunicorn
+flask-login
+flask-wtf
+flask-mail
+python-dotenv
+werkzeug

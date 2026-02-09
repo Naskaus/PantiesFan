@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Muses | Admin | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Muse Management</h1>
+        <div class="admin-actions">
+            <a href="{{ url_for('admin_muse_new') }}" class="admin-btn primary"><i class="fas fa-plus"></i> Add New Muse</a>
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Muse Cards -->
+    <div class="muse-grid">
+        {% for m in muses %}
+        <div class="muse-card">
+            <div class="muse-card-header">
+                <div class="muse-avatar">
+                    {% if m['avatar_url'] %}
+                    <img src="{{ url_for('static', filename=m['avatar_url']) }}" alt="{{ m['display_name'] }}">
+                    {% else %}
+                    <div class="avatar-placeholder"><i class="fas fa-user"></i></div>
+                    {% endif %}
+                </div>
+                <div class="muse-info">
+                    <h3>{{ m['display_name'] }}</h3>
+                    <span class="status-badge status-{% if m['verification'] == 'verified' %}live{% elif m['verification'] == 'pending' %}draft{% else %}ended{% endif %}">
+                        {{ m['verification']|upper }}
+                    </span>
+                </div>
+            </div>
+            {% if m['bio'] %}
+            <p class="muse-bio">{{ m['bio'][:120] }}{% if m['bio']|length > 120 %}...{% endif %}</p>
+            {% endif %}
+            <div class="muse-stats">
+                <div>
+                    <span class="muse-stat-value">{{ m['auction_count'] }}</span>
+                    <span class="muse-stat-label">Auctions</span>
+                </div>
+                <div>
+                    <span class="muse-stat-value">{{ m['sold_count'] }}</span>
+                    <span class="muse-stat-label">Sold</span>
+                </div>
+                <div>
+                    <span class="muse-stat-value">${{ "%.0f"|format(m['total_revenue']) }}</span>
+                    <span class="muse-stat-label">Revenue</span>
+                </div>
+            </div>
+            <div class="muse-card-actions">
+                <a href="{{ url_for('admin_muse_edit', muse_id=m['id']) }}" class="admin-btn small"><i class="fas fa-edit"></i> Edit</a>
+                <a href="{{ url_for('muse_profile', muse_id=m['id']) }}" class="admin-btn small" target="_blank"><i class="fas fa-external-link-alt"></i> View Profile</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not muses %}
+    <div class="empty-state">
+        <i class="fas fa-star"></i>
+        <p>No muses registered yet. Add your first muse to get started!</p>
+        <a href="{{ url_for('admin_muse_new') }}" class="admin-btn primary">Add First Muse</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

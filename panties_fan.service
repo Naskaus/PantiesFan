@@ -1,0 +1,22 @@
+[Unit]
+Description=PantiesFan.com Flask Auction Marketplace
+After=network.target
+
+[Service]
+User=seb
+Group=seb
+WorkingDirectory=/var/www/panties-fan
+Environment="PATH=/var/www/panties-fan/venv/bin:/usr/bin"
+EnvironmentFile=/var/www/panties-fan/.env
+ExecStart=/var/www/panties-fan/venv/bin/gunicorn \
+    --bind 127.0.0.1:8005 \
+    --workers 2 \
+    --timeout 120 \
+    --access-logfile - \
+    --error-logfile - \
+    app:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

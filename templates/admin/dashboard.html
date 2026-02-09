@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <div class="admin-actions">
+            <a href="{{ url_for('admin_auction_new') }}" class="admin-btn primary"><i class="fas fa-plus"></i> New Auction</a>
+            <a href="{{ url_for('admin_orders') }}" class="admin-btn"><i class="fas fa-receipt"></i> Orders</a>
+            <a href="{{ url_for('admin_muses') }}" class="admin-btn"><i class="fas fa-users"></i> Manage Muses</a>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-gavel"></i></div>
+            <div class="stat-value">{{ stats.total_auctions }}</div>
+            <div class="stat-label">Total Auctions</div>
+        </div>
+        <div class="stat-card live">
+            <div class="stat-icon"><i class="fas fa-circle"></i></div>
+            <div class="stat-value">{{ stats.live_auctions }}</div>
+            <div class="stat-label">Live Now</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-flag-checkered"></i></div>
+            <div class="stat-value">{{ stats.ended_auctions }}</div>
+            <div class="stat-label">Ended</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-hand-paper"></i></div>
+            <div class="stat-value">{{ stats.total_bids }}</div>
+            <div class="stat-label">Total Bids</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-user"></i></div>
+            <div class="stat-value">{{ stats.total_users }}</div>
+            <div class="stat-label">Buyers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-value">{{ stats.total_muses }}</div>
+            <div class="stat-label">Muses</div>
+        </div>
+        <div class="stat-card accent">
+            <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="stat-value">${{ "%.2f"|format(stats.total_gmv) }}</div>
+            <div class="stat-label">GMV (Ended)</div>
+        </div>
+    </div>
+
+    <!-- Auctions Table -->
+    <div class="admin-section">
+        <h2>All Auctions</h2>
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Muse</th>
+                        <th>Status</th>
+                        <th>Current Bid</th>
+                        <th>Bids</th>
+                        <th>High Bidder</th>
+                        <th>Ends At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in auctions %}
+                    <tr class="{% if a['status'] == 'live' %}row-live{% elif a['status'] == 'ended' %}row-ended{% else %}row-draft{% endif %}">
+                        <td>{{ a['id'] }}</td>
+                        <td>
+                            {% if a['image'] %}
+                            <div class="table-thumb">
+                                {% if a['image'].startswith('uploads/') %}
+                                <img src="{{ url_for('static', filename=a['image']) }}" alt="">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='images/' + a['image']) }}" alt="">
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ a['title'] }}</strong></td>
+                        <td>{{ a['muse_name'] or 'N/A' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ a['status'] }}">{{ a['status']|upper }}</span>
+                        </td>
+                        <td class="price-cell">${{ "%.2f"|format(a['current_bid'] or a['starting_bid']) }}</td>
+                        <td>{{ a['bid_count'] }}</td>
+                        <td>{{ a['bidder_name'] or '&mdash;' }}</td>
+                        <td>
+                            {% if a['status'] == 'live' %}
+                            <span class="countdown-mini" data-ends-at="{{ a['ends_at'] }}">--</span>
+                            {% else %}
+                            <span class="text-muted">{{ a['ends_at'][:16] }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell">
+                            <a href="{{ url_for('admin_auction_edit', auction_id=a['id']) }}" class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="{{ url_for('admin_auction_bids', auction_id=a['id']) }}" class="action-btn" title="View Bids"><i class="fas fa-list"></i></a>
+                            {% if a['status'] == 'live' %}
+                            <form method="POST" action="{{ url_for('admin_auction_extend', auction_id=a['id']) }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="minutes" value="30">
+                                <button type="submit" class="action-btn extend" title="Extend 30min"><i class="fas fa-clock"></i></button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin_auction_end', auction_id=a['id']) }}" style="display:inline;"
+                                  onsubmit="return confirm('End this auction now?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="action-btn danger" title="End Now"><i class="fas fa-stop"></i></button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Mini countdowns for admin table
+function initAdminCountdowns() {
+    const els = document.querySelectorAll('.countdown-mini[data-ends-at]');
+    if (!els.length) return;
+
+    function update() {
+        const now = Date.now();
+        els.forEach(el => {
+            const endsAt = new Date(el.dataset.endsAt).getTime();
+            const diff = endsAt - now;
+            if (diff <= 0) {
+                el.textContent = 'ENDED';
+                el.classList.add('text-danger');
+                return;
+            }
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            el.textContent = `${h}h ${m}m ${s}s`;
+            if (diff < 300000) el.classList.add('text-danger');
+        });
+    }
+    update();
+    setInterval(update, 1000);
+}
+initAdminCountdowns();
+</script>
+{% endblock %}

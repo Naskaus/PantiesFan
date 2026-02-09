@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{{ muse['display_name'] }} | PantiesFan.com{% endblock %}
+
+{% block content %}
+
+<div class="muse-profile-container">
+    <!-- Muse Header -->
+    <div class="muse-profile-header">
+        <div class="muse-profile-avatar">
+            {% if muse['avatar_url'] %}
+            <img src="{{ url_for('static', filename=muse['avatar_url']) }}" alt="{{ muse['display_name'] }}">
+            {% else %}
+            <div class="avatar-placeholder large"><i class="fas fa-user"></i></div>
+            {% endif %}
+        </div>
+        <div class="muse-profile-info">
+            <h1>{{ muse['display_name'] }}</h1>
+            {% if muse['verification'] == 'verified' %}
+            <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified Muse</span>
+            {% endif %}
+            {% if muse['bio'] %}
+            <p class="muse-profile-bio">{{ muse['bio'] }}</p>
+            {% endif %}
+            <div class="muse-profile-stats">
+                <div class="muse-profile-stat">
+                    <span class="stat-num">{{ stats.total_listed }}</span>
+                    <span class="stat-text">Listings</span>
+                </div>
+                <div class="muse-profile-stat">
+                    <span class="stat-num">{{ stats.total_sold }}</span>
+                    <span class="stat-text">Sold</span>
+                </div>
+                {% if stats.avg_price > 0 %}
+                <div class="muse-profile-stat">
+                    <span class="stat-num">${{ "%.0f"|format(stats.avg_price) }}</span>
+                    <span class="stat-text">Avg Price</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Muse's Auctions -->
+    <div class="muse-auctions-section">
+        <h2 class="section-title" style="margin-bottom: 2rem;">
+            {% set live_count = auctions|selectattr('status', 'equalto', 'live')|list|length %}
+            {% if live_count > 0 %}
+            {{ muse['display_name'] }}'s Auctions <span style="color: var(--accent-gold); font-size: 1rem;">({{ live_count }} live)</span>
+            {% else %}
+            {{ muse['display_name'] }}'s Auctions
+            {% endif %}
+        </h2>
+
+        {% if auctions %}
+        <div class="grid">
+            {% for item in auctions %}
+            <div class="card">
+                {% if item['status'] == 'live' %}
+                <div class="live-badge">
+                    <div class="live-dot"></div> Live
+                </div>
+                {% else %}
+                <div class="ended-badge">{{ item['status']|capitalize }}</div>
+                {% endif %}
+                <div class="card-img-container">
+                    {% if item['image'].startswith('uploads/') %}
+                    <img src="{{ url_for('static', filename=item['image']) }}" alt="{{ item['title'] }}" class="card-img">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/' + item['image']) }}" alt="{{ item['title'] }}" class="card-img">
+                    {% endif %}
+                </div>
+                <div class="card-info">
+                    <h4 class="card-title">{{ item['title'] }}</h4>
+                    <div class="card-meta">
+                        <span><i class="far fa-clock"></i>
+                            {% if item['status'] == 'live' %}
+                            <span class="countdown" data-ends-at="{{ item['ends_at'] }}">--</span>
+                            {% else %}
+                            Ended
+                            {% endif %}
+                        </span>
+                        <span class="price">${{ "%.2f"|format(item['current_bid']) }}</span>
+                    </div>
+
+                    {% if item['status'] == 'live' %}
+                        {% if current_user.is_authenticated %}
+                        <div class="bid-input-row">
+                            <input type="number" class="bid-amount-input"
+                                   placeholder="${{ "%.2f"|format(item['current_bid'] + 5) }}+"
+                                   min="{{ item['current_bid'] + 5 }}" step="1"
+                                   id="input-{{ item['id'] }}">
+                            <button class="bid-btn" onclick="placeBid('{{ item['id'] }}')">Bid</button>
+                        </div>
+                        <p class="min-bid-hint" id="min-bid-{{ item['id'] }}">Min bid: ${{ "%.2f"|format(item['current_bid'] + 5) }}</p>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="bid-btn" style="display: block; text-align: center; margin-top: 1.5rem;">Sign In to Bid</a>
+                        {% endif %}
+                    {% else %}
+                        <button class="bid-btn" disabled style="margin-top: 1.5rem;">Auction Ended</button>
+                    {% endif %}
+
+                    {% if item['bidder_name'] %}
+                    <p style="font-size: 0.7rem; color: var(--accent-gold); margin-top: 0.5rem;">
+                        High bidder: {{ item['bidder_name'] }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+            <i class="fas fa-box-open" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+            <p>No auctions from this muse yet. Check back soon!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

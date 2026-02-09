@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}{% if editing %}Edit Auction{% else %}New Auction{% endif %} | Admin | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>{% if editing %}Edit Auction{% else %}Create New Auction{% endif %}</h1>
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="admin-form-card">
+        <form method="POST"
+              action="{% if editing %}{{ url_for('admin_auction_edit', auction_id=auction.id) }}{% else %}{{ url_for('admin_auction_new') }}{% endif %}"
+              enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="title">Auction Title *</label>
+                    <input type="text" id="title" name="title" required
+                           placeholder="e.g. Silk Lace Nightset (Worn 2 Days)"
+                           value="{{ auction.title if editing else request.form.get('title', '') }}">
+                </div>
+            </div>
+
+            <div class="form-row two-col">
+                <div class="form-group">
+                    <label for="muse_id">Muse *</label>
+                    <select id="muse_id" name="muse_id" required>
+                        <option value="">Select a muse...</option>
+                        {% for m in muses %}
+                        <option value="{{ m['id'] }}"
+                                {% if editing and auction.muse_id == m['id'] %}selected{% endif %}
+                                {% if not editing and request.form.get('muse_id')|int == m['id'] %}selected{% endif %}>
+                            {{ m['display_name'] }}
+                            {% if m['verification'] == 'verified' %}(Verified){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="">Select...</option>
+                        {% set cats = ['panties', 'thong', 'set', 'bra', 'stockings', 'custom', 'other'] %}
+                        {% for c in cats %}
+                        <option value="{{ c }}"
+                                {% if editing and auction.category == c %}selected{% endif %}
+                                {% if not editing and request.form.get('category') == c %}selected{% endif %}>
+                            {{ c|capitalize }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4"
+                          placeholder="Describe the item, wear details, and anything special...">{{ auction.description if editing else request.form.get('description', '') }}</textarea>
+            </div>
+
+            <div class="form-row two-col">
+                <div class="form-group">
+                    <label for="wear_duration">Wear Duration</label>
+                    <input type="text" id="wear_duration" name="wear_duration"
+                           placeholder="e.g. 2 days, 1 workout"
+                           value="{{ auction.wear_duration if editing else request.form.get('wear_duration', '') }}">
+                </div>
+                {% if not editing %}
+                <div class="form-group">
+                    <label for="duration_hours">Auction Duration (hours) *</label>
+                    <input type="number" id="duration_hours" name="duration_hours" required min="1" max="168"
+                           placeholder="24" value="{{ request.form.get('duration_hours', '24') }}">
+                </div>
+                {% endif %}
+                {% if editing %}
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        {% set statuses = ['draft', 'live', 'ended', 'paid', 'shipped', 'completed', 'cancelled'] %}
+                        {% for s in statuses %}
+                        <option value="{{ s }}" {% if auction.status == s %}selected{% endif %}>{{ s|capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if not editing %}
+            <div class="form-row two-col">
+                <div class="form-group">
+                    <label for="starting_bid">Starting Bid ($) *</label>
+                    <input type="number" id="starting_bid" name="starting_bid" required min="1" step="0.01"
+                           placeholder="50.00" value="{{ request.form.get('starting_bid', '') }}">
+                </div>
+                <div class="form-group">
+                    <label for="status">Launch Status</label>
+                    <select id="status" name="status">
+                        <option value="live">Live (start immediately)</option>
+                        <option value="draft">Draft (publish later)</option>
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="image">
+                    {% if editing %}Replace Image (optional){% else %}Auction Image * {% endif %}
+                </label>
+                {% if editing and auction.image %}
+                <div class="current-image">
+                    {% if auction.image.startswith('uploads/') %}
+                    <img src="{{ url_for('static', filename=auction.image) }}" alt="Current">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/' + auction.image) }}" alt="Current">
+                    {% endif %}
+                    <span>Current image</span>
+                </div>
+                {% endif %}
+                <input type="file" id="image" name="image" accept="image/*"
+                       {% if not editing %}required{% endif %}>
+                <p class="form-hint">JPG, PNG, GIF, or WebP. Max 16MB.</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="admin-btn primary large">
+                    <i class="fas fa-{% if editing %}save{% else %}plus{% endif %}"></i>
+                    {% if editing %}Save Changes{% else %}Create Auction{% endif %}
+                </button>
+                <a href="{{ url_for('admin_dashboard') }}" class="admin-btn large">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
