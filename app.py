@@ -824,8 +824,15 @@ def admin_auction_end(auction_id):
     conn.execute("UPDATE auctions SET status = 'ended', ends_at = ? WHERE id = ?",
                  (datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), auction_id))
     conn.commit()
+
+    # Create payment record for the winner (if any)
+    payment = create_payment_for_winner(conn, auction_id)
     conn.close()
-    flash('Auction ended.', 'info')
+
+    if payment:
+        flash('Auction ended. Payment record created for winner.', 'success')
+    else:
+        flash('Auction ended (no winning bidder).', 'info')
     return redirect(url_for('admin_dashboard'))
 
 
@@ -1078,8 +1085,7 @@ def payment_save_address(token):
 @app.route('/pay/<token>/confirm', methods=['POST'])
 @login_required
 def payment_confirm_method(token):
-    """Buyer selects payment method — in Phase 1 this is manual (admin marks paid).
-    For now, this sets status to 'pending' and notifies admin."""
+    """Buyer selects payment method — routes to appropriate checkout flow."""
     conn = get_db()
     payment = conn.execute('SELECT * FROM payments WHERE payment_token = ?', (token,)).fetchone()
     if not payment or payment['buyer_id'] != current_user.id:
@@ -1102,18 +1108,9 @@ def payment_confirm_method(token):
         return redirect(url_for('payment_page', token=token))
 
     method = request.form.get('method', 'card')
-    now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-    # Calculate shipping cost
+    # Calculate shipping cost & ensure shipment record exists
     shipping_cost = SHIPPING_RATES.get(address['country'], SHIPPING_RATES['DEFAULT'])
-
-    # Update payment to pending (waiting for actual payment)
-    conn.execute('''
-        UPDATE payments SET status = 'pending', processor = ?, completed_at = NULL
-        WHERE id = ?
-    ''', (method, payment['id']))
-
-    # Create shipment record
     existing_shipment = conn.execute('SELECT id FROM shipments WHERE payment_id = ?', (payment['id'],)).fetchone()
     if not existing_shipment:
         destination = f"{address['full_name']}, {address['address_line1']}, {address['city']}, {address['country']}"
@@ -1121,25 +1118,153 @@ def payment_confirm_method(token):
             INSERT INTO shipments (payment_id, destination, status, shipping_cost)
             VALUES (?, ?, 'awaiting_payment', ?)
         ''', (payment['id'], destination, shipping_cost))
+        conn.commit()
 
-    conn.commit()
+    conn.close()
 
-    # Notification for buyer
+    if method == 'card':
+        # Redirect to credit card checkout page
+        return redirect(url_for('checkout_card', token=token))
+    else:
+        # Crypto: set to pending (manual verification by admin)
+        conn = get_db()
+        now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        conn.execute('''
+            UPDATE payments SET status = 'pending', processor = 'crypto', completed_at = NULL
+            WHERE id = ?
+        ''', (payment['id'],))
+        conn.execute('''
+            INSERT INTO notifications (user_id, type, title, message, link, created_at)
+            VALUES (?, 'payment_pending', ?, ?, ?, ?)
+        ''', (
+            current_user.id,
+            'Crypto Payment Initiated',
+            'Your cryptocurrency payment is awaiting confirmation. You will be notified once verified.',
+            f'/pay/{token}',
+            now_str
+        ))
+        conn.commit()
+        conn.close()
+        flash('Crypto payment initiated! You will receive confirmation once the transaction is verified.', 'success')
+        return redirect(url_for('payment_page', token=token))
+
+
+@app.route('/pay/<token>/checkout')
+@login_required
+def checkout_card(token):
+    """Multi-step credit card checkout page."""
+    conn = get_db()
+    payment = conn.execute('SELECT * FROM payments WHERE payment_token = ?', (token,)).fetchone()
+    if not payment or payment['buyer_id'] != current_user.id:
+        conn.close()
+        abort(403)
+
+    if payment['status'] not in ('awaiting_payment',):
+        conn.close()
+        return redirect(url_for('payment_page', token=token))
+
+    auction = conn.execute('''
+        SELECT a.*, m.display_name as muse_name
+        FROM auctions a
+        LEFT JOIN muse_profiles m ON a.muse_id = m.id
+        WHERE a.id = ?
+    ''', (payment['auction_id'],)).fetchone()
+
+    address = conn.execute(
+        'SELECT * FROM shipping_addresses WHERE user_id = ? AND is_default = 1 ORDER BY created_at DESC LIMIT 1',
+        (current_user.id,)
+    ).fetchone()
+
+    shipment = conn.execute('SELECT * FROM shipments WHERE payment_id = ?', (payment['id'],)).fetchone()
+    shipping_cost = shipment['shipping_cost'] if shipment else SHIPPING_RATES.get(
+        address['country'] if address else 'DEFAULT', SHIPPING_RATES['DEFAULT'])
+
+    conn.close()
+    return render_template('checkout.html',
+                           payment=payment, auction=auction, address=address,
+                           shipping_cost=shipping_cost,
+                           total=payment['amount'] + shipping_cost)
+
+
+@app.route('/pay/<token>/process-card', methods=['POST'])
+@login_required
+def process_card_payment(token):
+    """Process credit card payment (simulated — accepts any card)."""
+    conn = get_db()
+    payment = conn.execute('SELECT * FROM payments WHERE payment_token = ?', (token,)).fetchone()
+    if not payment or payment['buyer_id'] != current_user.id:
+        conn.close()
+        return jsonify({'success': False, 'message': 'Payment not found.'}), 403
+
+    if payment['status'] not in ('awaiting_payment',):
+        conn.close()
+        return jsonify({'success': False, 'message': 'This payment has already been processed.'}), 400
+
+    # Get card details from request
+    data = request.get_json()
+    if not data:
+        conn.close()
+        return jsonify({'success': False, 'message': 'No payment data received.'}), 400
+
+    card_number = (data.get('card_number', '') or '').replace(' ', '')
+    card_name = (data.get('card_name', '') or '').strip()
+    card_expiry = (data.get('card_expiry', '') or '').strip()
+    card_cvv = (data.get('card_cvv', '') or '').strip()
+
+    # Basic validation
+    errors = []
+    if len(card_number) < 13 or not card_number.isdigit():
+        errors.append('Please enter a valid card number.')
+    if not card_name or len(card_name) < 2:
+        errors.append('Cardholder name is required.')
+    if not card_expiry or '/' not in card_expiry:
+        errors.append('Please enter a valid expiry date (MM/YY).')
+    if not card_cvv or len(card_cvv) < 3:
+        errors.append('Please enter a valid CVV.')
+
+    if errors:
+        conn.close()
+        return jsonify({'success': False, 'message': errors[0]}), 400
+
+    # Simulate payment processing
+    # Generate a realistic transaction ID
+    txn_id = f"CCB-{secrets.token_hex(6).upper()}"
+    now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    last_four = card_number[-4:]
+
+    # Mark payment as paid (instant card processing)
+    conn.execute('''
+        UPDATE payments SET status = 'paid', processor = ?, processor_txn = ?, completed_at = ?
+        WHERE id = ?
+    ''', (f'card-{last_four}', txn_id, now_str, payment['id']))
+
+    # Update shipment to preparing
+    conn.execute("UPDATE shipments SET status = 'preparing' WHERE payment_id = ?", (payment['id'],))
+
+    # Update auction status
+    conn.execute("UPDATE auctions SET status = 'paid' WHERE id = ?", (payment['auction_id'],))
+
+    # Notify buyer
     conn.execute('''
         INSERT INTO notifications (user_id, type, title, message, link, created_at)
-        VALUES (?, 'payment_pending', ?, ?, ?, ?)
+        VALUES (?, 'payment_confirmed', ?, ?, ?, ?)
     ''', (
         current_user.id,
-        'Payment Initiated',
-        f'Your payment via {method} is being processed. You will receive confirmation shortly.',
+        'Payment Confirmed!',
+        f'Your credit card payment (ending {last_four}) of ${payment["amount"]:.2f} has been confirmed. We are preparing your item for shipping.',
         f'/pay/{token}',
         now_str
     ))
+
     conn.commit()
     conn.close()
 
-    flash(f'Payment via {method} initiated! You will receive confirmation once processed.', 'success')
-    return redirect(url_for('payment_page', token=token))
+    return jsonify({
+        'success': True,
+        'message': 'Payment successful!',
+        'txn_id': txn_id,
+        'redirect': url_for('payment_page', token=token)
+    })
 
 
 # =============================================
@@ -1466,6 +1591,7 @@ def add_security_headers(response):
 # Exempt JSON APIs from CSRF (they require authentication)
 csrf.exempt(place_bid)
 csrf.exempt(notification_count)
+csrf.exempt(process_card_payment)
 
 
 # =============================================

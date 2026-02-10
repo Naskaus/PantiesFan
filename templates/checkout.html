@@ -1,0 +1,1076 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Checkout | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/buyer.css') }}">
+<style>
+/* =============================================
+   CHECKOUT PAGE STYLES
+   ============================================= */
+.checkout-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 7rem 2rem 4rem;
+    min-height: 100vh;
+}
+
+.checkout-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.checkout-header h1 {
+    font-size: 2rem;
+    color: var(--accent-gold);
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 0.5rem;
+}
+
+.checkout-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.secure-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #81c784;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+/* Steps indicator */
+.checkout-steps {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.checkout-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    max-width: 160px;
+}
+
+.checkout-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: calc(50% + 20px);
+    width: calc(100% - 40px);
+    height: 2px;
+    background: var(--glass-border);
+    z-index: 0;
+}
+
+.checkout-step.done:not(:last-child)::after {
+    background: var(--accent-gold);
+}
+
+.step-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--primary-dark);
+    transition: all 0.3s ease;
+}
+
+.checkout-step.active .step-num {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+}
+
+.checkout-step.done .step-num {
+    border-color: var(--accent-gold);
+    background: var(--accent-gold);
+    color: var(--primary-dark);
+}
+
+.step-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.checkout-step.active .step-label,
+.checkout-step.done .step-label {
+    color: var(--text-main);
+}
+
+/* Layout */
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Card form */
+.card-form-section {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 2rem;
+}
+
+.card-form-section h2 {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-visual {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1.586;
+    max-height: 210px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-visual::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.card-visual::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -20%;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.card-chip {
+    width: 40px;
+    height: 30px;
+    background: linear-gradient(135deg, #d4af37 0%, #c4a030 50%, #d4af37 100%);
+    border-radius: 4px;
+    position: relative;
+}
+
+.card-chip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
+}
+
+.card-number-display {
+    font-family: 'Courier New', monospace;
+    font-size: 1.25rem;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.card-holder-display {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.card-holder-display span {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 0.2rem;
+    letter-spacing: 1px;
+}
+
+.card-expiry-display {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: right;
+}
+
+.card-expiry-display span {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 0.2rem;
+}
+
+.card-brand-icon {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Form inputs */
+.card-form .form-group {
+    margin-bottom: 1.2rem;
+}
+
+.card-form .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.card-form .form-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.card-form .form-group input:focus {
+    border-color: var(--accent-gold);
+}
+
+.card-form .form-group input::placeholder {
+    color: #555;
+}
+
+.card-form .form-group input.error {
+    border-color: #e57373;
+}
+
+.card-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-error {
+    font-size: 0.75rem;
+    color: #e57373;
+    margin-top: 0.3rem;
+    display: none;
+}
+
+.form-error.visible {
+    display: block;
+}
+
+/* Order summary sidebar */
+.order-summary-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 7rem;
+}
+
+.order-summary-card h3 {
+    font-size: 1rem;
+    color: var(--text-main);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.summary-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.summary-item-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.summary-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.summary-item-info h4 {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    margin-bottom: 0.2rem;
+}
+
+.summary-item-info p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.summary-address {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.summary-address strong {
+    color: var(--text-main);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+/* Pay button */
+.pay-btn-main {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-wine);
+    border: none;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.pay-btn-main:hover {
+    background: var(--primary-wine-light);
+}
+
+.pay-btn-main:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pay-btn-main .spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+.pay-btn-main.processing .spinner {
+    display: block;
+}
+
+.pay-btn-main.processing .btn-text {
+    display: none;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Processing overlay */
+.processing-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.92);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.processing-overlay.active {
+    display: flex;
+}
+
+.processing-content {
+    text-align: center;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.processing-spinner {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(212, 175, 55, 0.2);
+    border-top-color: var(--accent-gold);
+    border-radius: 50%;
+    animation: btn-spin 0.8s linear infinite;
+    margin: 0 auto 2rem;
+}
+
+.processing-content h2 {
+    font-size: 1.5rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.processing-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.processing-steps {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.processing-step {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    transition: color 0.3s ease;
+}
+
+.processing-step.active {
+    color: var(--accent-gold);
+}
+
+.processing-step.done {
+    color: #81c784;
+}
+
+.processing-step i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Success overlay */
+.success-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.95);
+    z-index: 10001;
+    justify-content: center;
+    align-items: center;
+}
+
+.success-overlay.active {
+    display: flex;
+}
+
+.success-content {
+    text-align: center;
+    max-width: 450px;
+    padding: 2rem;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(76, 175, 80, 0.15);
+    border: 2px solid #81c784;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: #81c784;
+    animation: pop-in 0.3s ease;
+}
+
+@keyframes pop-in {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.success-content h2 {
+    font-size: 1.8rem;
+    color: #81c784;
+    margin-bottom: 0.5rem;
+}
+
+.success-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.success-txn {
+    font-family: monospace;
+    color: var(--accent-gold);
+    font-size: 0.85rem;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 4px;
+}
+
+.success-btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: var(--primary-wine);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    font-family: 'Montserrat', sans-serif;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.success-btn:hover {
+    background: var(--primary-wine-light);
+}
+
+/* Back link */
+.checkout-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.checkout-back:hover {
+    color: var(--accent-gold);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .checkout-container {
+        padding: 5rem 0.8rem 2rem;
+    }
+
+    .checkout-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .order-summary-card {
+        position: static;
+        order: -1;
+    }
+
+    .card-form-section {
+        padding: 1.5rem;
+    }
+
+    .card-visual {
+        max-height: 180px;
+        padding: 1.2rem;
+    }
+
+    .card-number-display {
+        font-size: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .card-form .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .checkout-steps {
+        margin-bottom: 2rem;
+    }
+
+    .step-label {
+        font-size: 0.6rem;
+    }
+
+    .checkout-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .checkout-container {
+        padding: 4.5rem 0.5rem 2rem;
+    }
+
+    .card-visual {
+        max-height: 160px;
+        padding: 1rem;
+    }
+
+    .card-number-display {
+        font-size: 0.9rem;
+    }
+
+    .card-holder-display span,
+    .card-expiry-display span {
+        font-size: 0.75rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Processing overlay -->
+<div class="processing-overlay" id="processing-overlay">
+    <div class="processing-content">
+        <div class="processing-spinner"></div>
+        <h2>Processing Payment</h2>
+        <p>Please do not close this window...</p>
+        <div class="processing-steps">
+            <div class="processing-step active" id="pstep-1">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <span>Validating card details</span>
+            </div>
+            <div class="processing-step" id="pstep-2">
+                <i class="far fa-circle"></i>
+                <span>Contacting payment processor</span>
+            </div>
+            <div class="processing-step" id="pstep-3">
+                <i class="far fa-circle"></i>
+                <span>Authorizing transaction</span>
+            </div>
+            <div class="processing-step" id="pstep-4">
+                <i class="far fa-circle"></i>
+                <span>Confirming payment</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="success-overlay">
+    <div class="success-content">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <h2>Payment Successful!</h2>
+        <p>Your order has been confirmed and is being prepared.</p>
+        <div class="success-txn" id="success-txn"></div>
+        <p style="font-size: 0.8rem;">You will receive a notification when your item ships.</p>
+        <a href="{{ url_for('payment_page', token=payment['payment_token']) }}" class="success-btn" id="success-btn">
+            View Order Details
+        </a>
+    </div>
+</div>
+
+<div class="checkout-container">
+    <a href="{{ url_for('payment_page', token=payment['payment_token']) }}" class="checkout-back">
+        <i class="fas fa-arrow-left"></i> Back to order
+    </a>
+
+    <div class="checkout-header">
+        <h1>Secure Checkout</h1>
+        <p>Complete your payment to finalize your order</p>
+        <div class="secure-badge">
+            <i class="fas fa-lock"></i> 256-bit SSL Encrypted
+        </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="checkout-steps">
+        <div class="checkout-step done">
+            <div class="step-num"><i class="fas fa-check" style="font-size: 0.7rem;"></i></div>
+            <span class="step-label">Address</span>
+        </div>
+        <div class="checkout-step done">
+            <div class="step-num"><i class="fas fa-check" style="font-size: 0.7rem;"></i></div>
+            <span class="step-label">Method</span>
+        </div>
+        <div class="checkout-step active">
+            <div class="step-num">3</div>
+            <span class="step-label">Card Details</span>
+        </div>
+        <div class="checkout-step">
+            <div class="step-num">4</div>
+            <span class="step-label">Confirm</span>
+        </div>
+    </div>
+
+    <div class="checkout-layout">
+        <!-- Card form -->
+        <div class="card-form-section">
+            <h2><i class="fas fa-credit-card"></i> Card Information</h2>
+
+            <!-- Interactive card preview -->
+            <div class="card-visual">
+                <div class="card-brand-icon" id="card-brand-icon"><i class="far fa-credit-card"></i></div>
+                <div class="card-chip"></div>
+                <div class="card-number-display" id="card-number-display">**** **** **** ****</div>
+                <div class="card-bottom">
+                    <div class="card-holder-display">
+                        CARD HOLDER
+                        <span id="card-holder-display">YOUR NAME</span>
+                    </div>
+                    <div class="card-expiry-display">
+                        EXPIRES
+                        <span id="card-expiry-display">MM/YY</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card form -->
+            <form class="card-form" id="card-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="card_number">Card Number</label>
+                    <input type="text" id="card_number" name="card_number"
+                           placeholder="4242 4242 4242 4242"
+                           maxlength="19" autocomplete="cc-number" inputmode="numeric">
+                    <div class="form-error" id="err-number">Please enter a valid card number</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="card_name">Cardholder Name</label>
+                    <input type="text" id="card_name" name="card_name"
+                           placeholder="JOHN DOE" autocomplete="cc-name"
+                           style="text-transform: uppercase;">
+                    <div class="form-error" id="err-name">Cardholder name is required</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="card_expiry">Expiry Date</label>
+                        <input type="text" id="card_expiry" name="card_expiry"
+                               placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" inputmode="numeric">
+                        <div class="form-error" id="err-expiry">Enter a valid expiry date</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card_cvv">CVV</label>
+                        <input type="text" id="card_cvv" name="card_cvv"
+                               placeholder="123" maxlength="4" autocomplete="cc-csc" inputmode="numeric">
+                        <div class="form-error" id="err-cvv">Enter a valid CVV</div>
+                    </div>
+                </div>
+
+                <button type="button" class="pay-btn-main" id="pay-btn" onclick="submitPayment()">
+                    <i class="fas fa-lock"></i>
+                    <span class="btn-text">Pay ${{ "%.2f"|format(total) }}</span>
+                    <div class="spinner"></div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Order summary -->
+        <div class="order-summary-card">
+            <h3>Order Summary</h3>
+
+            <div class="summary-item">
+                <div class="summary-item-img">
+                    {% if auction['image'].startswith('uploads/') %}
+                    <img src="{{ url_for('static', filename=auction['image']) }}" alt="">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/' + auction['image']) }}" alt="">
+                    {% endif %}
+                </div>
+                <div class="summary-item-info">
+                    <h4>{{ auction['title'] }}</h4>
+                    <p>by {{ auction['muse_name'] or 'Unknown' }}</p>
+                </div>
+            </div>
+
+            {% if address %}
+            <div class="summary-address">
+                <strong><i class="fas fa-map-marker-alt"></i> Ship to:</strong>
+                {{ address['full_name'] }}<br>
+                {{ address['address_line1'] }}<br>
+                {{ address['city'] }}, {{ address['country'] }} {{ address['postal_code'] }}
+            </div>
+            {% endif %}
+
+            <div class="price-breakdown" style="background: none; border: none; padding: 0;">
+                <div class="price-row">
+                    <span>Item Price</span>
+                    <span class="price-val">${{ "%.2f"|format(payment['amount']) }}</span>
+                </div>
+                <div class="price-row">
+                    <span>Shipping (DHL)</span>
+                    <span class="price-val">${{ "%.2f"|format(shipping_cost) }}</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total</span>
+                    <span class="price-val">${{ "%.2f"|format(total) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// =============================================
+// INTERACTIVE CARD PREVIEW
+// =============================================
+
+const cardNumberInput = document.getElementById('card_number');
+const cardNameInput = document.getElementById('card_name');
+const cardExpiryInput = document.getElementById('card_expiry');
+const cardCvvInput = document.getElementById('card_cvv');
+
+const cardNumberDisplay = document.getElementById('card-number-display');
+const cardHolderDisplay = document.getElementById('card-holder-display');
+const cardExpiryDisplay = document.getElementById('card-expiry-display');
+const cardBrandIcon = document.getElementById('card-brand-icon');
+
+// Format card number with spaces
+cardNumberInput.addEventListener('input', function(e) {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length > 16) v = v.slice(0, 16);
+    let formatted = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+    this.value = formatted;
+
+    // Update display
+    let display = v.padEnd(16, '*');
+    display = display.replace(/(.{4})/g, '$1 ').trim();
+    if (v.length === 0) display = '**** **** **** ****';
+    cardNumberDisplay.textContent = display;
+
+    // Detect card brand
+    detectBrand(v);
+
+    clearError('number');
+});
+
+// Format expiry
+cardExpiryInput.addEventListener('input', function(e) {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length > 4) v = v.slice(0, 4);
+    if (v.length >= 2) {
+        v = v.slice(0, 2) + '/' + v.slice(2);
+    }
+    this.value = v;
+    cardExpiryDisplay.textContent = v || 'MM/YY';
+    clearError('expiry');
+});
+
+// Name update
+cardNameInput.addEventListener('input', function() {
+    cardHolderDisplay.textContent = this.value.toUpperCase() || 'YOUR NAME';
+    clearError('name');
+});
+
+// CVV
+cardCvvInput.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+    clearError('cvv');
+});
+
+function detectBrand(num) {
+    let icon = 'far fa-credit-card';
+    if (/^4/.test(num)) icon = 'fab fa-cc-visa';
+    else if (/^5[1-5]/.test(num) || /^2[2-7]/.test(num)) icon = 'fab fa-cc-mastercard';
+    else if (/^3[47]/.test(num)) icon = 'fab fa-cc-amex';
+    else if (/^6011|^65|^64[4-9]/.test(num)) icon = 'fab fa-cc-discover';
+    cardBrandIcon.innerHTML = '<i class="' + icon + '"></i>';
+}
+
+function clearError(field) {
+    const err = document.getElementById('err-' + field);
+    const input = document.getElementById('card_' + field);
+    if (err) err.classList.remove('visible');
+    if (input) input.classList.remove('error');
+}
+
+function showError(field, msg) {
+    const err = document.getElementById('err-' + field);
+    const input = document.getElementById('card_' + field);
+    if (err) {
+        if (msg) err.textContent = msg;
+        err.classList.add('visible');
+    }
+    if (input) input.classList.add('error');
+}
+
+// =============================================
+// PAYMENT SUBMISSION
+// =============================================
+
+let isSubmitting = false;
+
+async function submitPayment() {
+    if (isSubmitting) return;
+
+    // Validate
+    const number = cardNumberInput.value.replace(/\s/g, '');
+    const name = cardNameInput.value.trim();
+    const expiry = cardExpiryInput.value.trim();
+    const cvv = cardCvvInput.value.trim();
+
+    let valid = true;
+
+    if (number.length < 13 || !/^\d+$/.test(number)) {
+        showError('number');
+        valid = false;
+    }
+    if (!name || name.length < 2) {
+        showError('name');
+        valid = false;
+    }
+    if (!expiry || !/^\d{2}\/\d{2}$/.test(expiry)) {
+        showError('expiry');
+        valid = false;
+    }
+    if (!cvv || cvv.length < 3) {
+        showError('cvv');
+        valid = false;
+    }
+
+    if (!valid) return;
+
+    isSubmitting = true;
+    const btn = document.getElementById('pay-btn');
+    btn.classList.add('processing');
+    btn.disabled = true;
+
+    // Show processing overlay with steps
+    const overlay = document.getElementById('processing-overlay');
+    overlay.classList.add('active');
+
+    // Animate processing steps
+    const steps = [
+        { id: 'pstep-1', delay: 800 },
+        { id: 'pstep-2', delay: 1200 },
+        { id: 'pstep-3', delay: 1000 },
+        { id: 'pstep-4', delay: 800 }
+    ];
+
+    async function animateSteps() {
+        for (let i = 0; i < steps.length; i++) {
+            const el = document.getElementById(steps[i].id);
+            el.classList.add('active');
+            el.querySelector('i').className = 'fas fa-circle-notch fa-spin';
+            await new Promise(r => setTimeout(r, steps[i].delay));
+            el.classList.remove('active');
+            el.classList.add('done');
+            el.querySelector('i').className = 'fas fa-check-circle';
+        }
+    }
+
+    // Start step animation and API call in parallel
+    const animPromise = animateSteps();
+
+    try {
+        const response = await fetch('/pay/{{ payment["payment_token"] }}/process-card', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                card_number: number,
+                card_name: name,
+                card_expiry: expiry,
+                card_cvv: cvv
+            })
+        });
+
+        const data = await response.json();
+
+        // Wait for animation to finish
+        await animPromise;
+        await new Promise(r => setTimeout(r, 500));
+
+        overlay.classList.remove('active');
+
+        if (data.success) {
+            // Show success
+            const successOverlay = document.getElementById('success-overlay');
+            document.getElementById('success-txn').textContent = 'Transaction ID: ' + data.txn_id;
+            successOverlay.classList.add('active');
+
+            if (data.redirect) {
+                document.getElementById('success-btn').href = data.redirect;
+            }
+        } else {
+            // Show error
+            showFlash(data.message || 'Payment failed. Please try again.', 'error');
+            btn.classList.remove('processing');
+            btn.disabled = false;
+            isSubmitting = false;
+
+            // Reset processing steps
+            document.querySelectorAll('.processing-step').forEach((el, i) => {
+                el.classList.remove('active', 'done');
+                el.querySelector('i').className = i === 0 ? 'fas fa-circle-notch fa-spin' : 'far fa-circle';
+            });
+        }
+    } catch (err) {
+        await animPromise;
+        overlay.classList.remove('active');
+        showFlash('Network error. Please check your connection and try again.', 'error');
+        btn.classList.remove('processing');
+        btn.disabled = false;
+        isSubmitting = false;
+
+        // Reset
+        document.querySelectorAll('.processing-step').forEach((el, i) => {
+            el.classList.remove('active', 'done');
+            el.querySelector('i').className = i === 0 ? 'fas fa-circle-notch fa-spin' : 'far fa-circle';
+        });
+    }
+}
+
+// Prevent form submission on Enter — trigger pay button instead
+document.getElementById('card-form').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        submitPayment();
+    }
+});
+</script>
+{% endblock %}
