@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Create Manual Order | Admin | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1><i class="fas fa-plus-circle" style="color: var(--accent-gold);"></i> Create Manual Order</h1>
+        <a href="{{ url_for('admin_orders') }}" class="admin-btn"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+    </div>
+
+    <div class="admin-form-card">
+        <form method="POST" action="{{ url_for('admin_order_new') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-row two-col">
+                <div class="form-group">
+                    <label for="auction_id">Auction *</label>
+                    <select id="auction_id" name="auction_id" class="form-control" required>
+                        <option value="">Select auction...</option>
+                        {% for a in auctions %}
+                        <option value="{{ a.id }}">{{ a.title }} (#{{ a.id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="buyer_id">Buyer *</label>
+                    <select id="buyer_id" name="buyer_id" class="form-control" required>
+                        <option value="">Select buyer...</option>
+                        {% for b in buyers %}
+                        <option value="{{ b.id }}">{{ b.display_name }} ({{ b.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row two-col">
+                <div class="form-group">
+                    <label for="amount">Amount ($) *</label>
+                    <input type="number" id="amount" name="amount" class="form-control" required
+                           min="0.01" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="status">Initial Status</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="awaiting_payment">Awaiting Payment</option>
+                        <option value="pending">Pending Verification</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="admin_notes">Admin Notes</label>
+                <textarea id="admin_notes" name="admin_notes" class="form-control" rows="3"
+                          placeholder="Reason for manual order, special instructions..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="admin-btn primary large">
+                    <i class="fas fa-plus"></i> Create Order
+                </button>
+                <a href="{{ url_for('admin_orders') }}" class="admin-btn large">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

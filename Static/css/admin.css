@@ -1102,3 +1102,137 @@
         font-size: 0.85rem;
     }
 }
+
+
+/* =============================================
+   ORDER DETAIL, USER MANAGEMENT & FILTER STYLES
+   ============================================= */
+
+/* --- Additional Status Badge Variants --- */
+.status-awaiting_payment {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-pending {
+    background: rgba(33, 150, 243, 0.15);
+    color: #64b5f6;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.status-preparing {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ffb74d;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.status-delivered {
+    background: rgba(76, 175, 80, 0.15);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* --- Filter Bar (User/Order search & filtering) --- */
+.filter-bar {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-bar form {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-bar .form-group {
+    margin-bottom: 0;
+}
+
+.filter-bar .form-control {
+    padding: 0.6rem 0.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    width: 100%;
+}
+
+.filter-bar .form-control:focus {
+    border-color: var(--accent-gold);
+}
+
+.filter-bar .form-control::placeholder {
+    color: #666;
+}
+
+/* --- Inactive Row Dimming (Users table) --- */
+.admin-table tbody tr.row-inactive {
+    opacity: 0.45;
+}
+
+.admin-table tbody tr.row-inactive:hover {
+    opacity: 0.7;
+}
+
+/* --- Danger Button Variant --- */
+.admin-btn.danger {
+    background: rgba(244, 67, 54, 0.1);
+    border-color: rgba(244, 67, 54, 0.4);
+    color: #e57373;
+}
+
+.admin-btn.danger:hover {
+    background: rgba(244, 67, 54, 0.2);
+    border-color: #e57373;
+    color: #ef5350;
+}
+
+/* --- View Detail Eye Icon --- */
+.action-btn.view:hover {
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* --- Order row status borders --- */
+.admin-table tbody tr.order-row-awaiting_payment {
+    border-left: 3px solid #ffc107;
+}
+
+.admin-table tbody tr.order-row-pending {
+    border-left: 3px solid #64b5f6;
+}
+
+.admin-table tbody tr.order-row-paid {
+    border-left: 3px solid #81c784;
+}
+
+.admin-table tbody tr.order-row-shipped {
+    border-left: 3px solid #ce93d8;
+}
+
+.admin-table tbody tr.order-row-completed {
+    border-left: 3px solid #666;
+    opacity: 0.7;
+}
+
+/* --- Responsive: Filter Bar --- */
+@media (max-width: 768px) {
+    .filter-bar form {
+        flex-direction: column;
+    }
+
+    .filter-bar .form-group {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+}

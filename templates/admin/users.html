@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}User Management | Admin | PantiesFan.com{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>User Management</h1>
+        <div class="admin-actions">
+            <a href="{{ url_for('admin_user_new') }}" class="admin-btn primary"><i class="fas fa-user-plus"></i> Add User</a>
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card live">
+            <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+            <div class="stat-value">{{ stats.buyers }}</div>
+            <div class="stat-label">Buyers</div>
+        </div>
+        <div class="stat-card accent">
+            <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="stat-value">{{ stats.admins }}</div>
+            <div class="stat-label">Admins</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(129, 199, 132, 0.3);">
+            <div class="stat-icon"><i class="fas fa-check-circle" style="color: #81c784;"></i></div>
+            <div class="stat-value">{{ stats.active }}</div>
+            <div class="stat-label">Active</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(229, 115, 115, 0.3);">
+            <div class="stat-icon"><i class="fas fa-ban" style="color: #e57373;"></i></div>
+            <div class="stat-value">{{ stats.inactive }}</div>
+            <div class="stat-label">Inactive</div>
+        </div>
+    </div>
+
+    <!-- Search / Filter -->
+    <div class="filter-bar">
+        <form method="GET" action="{{ url_for('admin_users') }}">
+            <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Search</label>
+                <input type="text" name="q" value="{{ search }}" class="form-control"
+                       placeholder="Name or email...">
+            </div>
+            <div class="form-group" style="width: 140px;">
+                <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Role</label>
+                <select name="role" class="form-control">
+                    <option value="">All</option>
+                    <option value="buyer" {% if role_filter == 'buyer' %}selected{% endif %}>Buyer</option>
+                    <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+            </div>
+            <div class="form-group" style="width: 140px;">
+                <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Status</label>
+                <select name="status" class="form-control">
+                    <option value="">All</option>
+                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+                <button type="submit" class="admin-btn primary"><i class="fas fa-search"></i> Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Users Table -->
+    <div class="admin-section">
+        <h2>All Users ({{ users|length }})</h2>
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Orders</th>
+                        <th>Bids</th>
+                        <th>Spent</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr class="{% if not u.is_active %}row-inactive{% endif %}">
+                        <td>{{ u.id }}</td>
+                        <td><strong>{{ u.display_name }}</strong></td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            {% if u.role == 'admin' %}
+                            <span class="status-badge status-draft">ADMIN</span>
+                            {% else %}
+                            <span class="status-badge status-live">BUYER</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if u.is_active %}
+                            <span class="status-badge status-completed">ACTIVE</span>
+                            {% else %}
+                            <span class="status-badge" style="background: rgba(244, 67, 54, 0.15); color: #e57373; border: 1px solid rgba(244, 67, 54, 0.3);">INACTIVE</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.order_count }}</td>
+                        <td>{{ u.bid_count }}</td>
+                        <td class="price-cell">${{ "%.2f"|format(u.total_spent) }}</td>
+                        <td><small class="text-muted">{{ u.created_at[:10] if u.created_at else '&mdash;' }}</small></td>
+                        <td class="actions-cell">
+                            <a href="{{ url_for('admin_user_edit', user_id=u.id) }}"
+                               class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></a>
+
+                            <form method="POST" action="{{ url_for('admin_user_toggle_active', user_id=u.id) }}"
+                                  style="display: inline;"
+                                  onsubmit="return confirm('{% if u.is_active %}Deactivate{% else %}Activate{% endif %} this user?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="action-btn {% if u.is_active %}danger{% else %}extend{% endif %}"
+                                        title="{% if u.is_active %}Deactivate{% else %}Activate{% endif %}">
+                                    <i class="fas fa-{% if u.is_active %}ban{% else %}check{% endif %}"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if not users %}
+        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            <i class="fas fa-users" style="font-size: 2rem; opacity: 0.3;"></i>
+            <p style="margin-top: 1rem;">No users found matching your criteria.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

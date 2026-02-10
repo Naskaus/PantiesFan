@@ -5,6 +5,7 @@ Phase 1 MVP: Authentication, Real Auctions, Proper Bidding, Admin Dashboard
 
 import os
 import uuid
+import json
 import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
@@ -141,6 +142,17 @@ def get_db():
     return conn
 
 
+def log_audit(conn, entity_type, entity_id, action, details=None):
+    """Insert an entry into the audit_log table."""
+    details_json = json.dumps(details) if details else None
+    aid = current_user.id if current_user.is_authenticated else None
+    now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    conn.execute('''
+        INSERT INTO audit_log (entity_type, entity_id, action, details, admin_id, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', (entity_type, entity_id, action, details_json, aid, now_str))
+
+
 def init_db():
     """Create tables and seed data if database doesn't exist."""
     fresh = not os.path.exists(DB_NAME)
@@ -252,7 +264,23 @@ def init_db():
             is_read INTEGER DEFAULT 0,
             created_at TEXT DEFAULT (datetime('now'))
         );
+
+        CREATE TABLE IF NOT EXISTS audit_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            entity_type TEXT NOT NULL,
+            entity_id INTEGER NOT NULL,
+            action TEXT NOT NULL,
+            details TEXT,
+            admin_id INTEGER REFERENCES users(id),
+            created_at TEXT DEFAULT (datetime('now'))
+        );
     ''')
+
+    # Safe migration: add admin_notes to payments if missing
+    try:
+        conn.execute("SELECT admin_notes FROM payments LIMIT 1")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE payments ADD COLUMN admin_notes TEXT")
 
     if fresh:
         _seed_data(conn)
@@ -1503,10 +1531,12 @@ def admin_mark_paid(payment_id):
         now_str
     ))
 
+    log_audit(conn, 'order', payment_id, 'marked_paid',
+              {'processor_txn': processor_txn})
     conn.commit()
     conn.close()
     flash('Payment marked as paid. Buyer notified.', 'success')
-    return redirect(url_for('admin_orders'))
+    return redirect(request.referrer or url_for('admin_orders'))
 
 
 @app.route('/admin/order/<int:payment_id>/ship', methods=['POST'])
@@ -1548,10 +1578,12 @@ def admin_ship_order(payment_id):
         now_str
     ))
 
+    log_audit(conn, 'order', payment_id, 'shipped',
+              {'tracking_number': tracking_number, 'carrier': carrier})
     conn.commit()
     conn.close()
     flash(f'Order shipped! Tracking: {tracking_number}. Buyer notified.', 'success')
-    return redirect(url_for('admin_orders'))
+    return redirect(request.referrer or url_for('admin_orders'))
 
 
 @app.route('/admin/order/<int:payment_id>/deliver', methods=['POST'])
@@ -1590,10 +1622,423 @@ def admin_deliver_order(payment_id):
         now_str
     ))
 
+    log_audit(conn, 'order', payment_id, 'delivered', {})
     conn.commit()
     conn.close()
     flash('Order marked as delivered. Transaction complete!', 'success')
+    return redirect(request.referrer or url_for('admin_orders'))
+
+
+# --- Admin: Order Detail + CRUD ---
+
+@app.route('/admin/order/<int:payment_id>')
+@admin_required
+def admin_order_detail(payment_id):
+    """Full order detail page with timeline and actions."""
+    conn = get_db()
+
+    order = conn.execute('''
+        SELECT p.*, a.id as auction_id, a.title as auction_title,
+               a.image as auction_image, a.status as auction_status,
+               a.category, a.wear_duration, a.current_bid,
+               u.id as buyer_id, u.display_name as buyer_name,
+               u.email as buyer_email, u.created_at as buyer_since,
+               m.display_name as muse_name,
+               s.id as shipment_id, s.status as shipment_status,
+               s.tracking_number, s.carrier, s.shipped_at,
+               s.delivered_at, s.shipping_cost, s.destination,
+               sa.full_name as ship_name, sa.address_line1, sa.address_line2,
+               sa.city, sa.state, sa.postal_code, sa.country, sa.phone
+        FROM payments p
+        JOIN auctions a ON p.auction_id = a.id
+        JOIN users u ON p.buyer_id = u.id
+        LEFT JOIN muse_profiles m ON a.muse_id = m.id
+        LEFT JOIN shipments s ON s.payment_id = p.id
+        LEFT JOIN shipping_addresses sa ON sa.user_id = u.id AND sa.is_default = 1
+        WHERE p.id = ?
+    ''', (payment_id,)).fetchone()
+
+    if not order:
+        conn.close()
+        abort(404)
+
+    # Audit timeline
+    timeline = conn.execute('''
+        SELECT al.*, u.display_name as admin_name
+        FROM audit_log al
+        LEFT JOIN users u ON al.admin_id = u.id
+        WHERE al.entity_type = 'order' AND al.entity_id = ?
+        ORDER BY al.created_at DESC
+    ''', (payment_id,)).fetchall()
+
+    # Recent bids for this auction
+    bids = conn.execute('''
+        SELECT b.amount, b.placed_at, b.is_winning, u.display_name as bidder_name
+        FROM bids b
+        JOIN users u ON b.user_id = u.id
+        WHERE b.auction_id = ?
+        ORDER BY b.placed_at DESC
+        LIMIT 10
+    ''', (order['auction_id'],)).fetchall()
+
+    conn.close()
+    return render_template('admin/order_detail.html',
+                           order=dict(order), timeline=timeline, bids=bids)
+
+
+@app.route('/admin/order/<int:payment_id>/edit', methods=['POST'])
+@admin_required
+def admin_order_edit(payment_id):
+    """Edit order details: status, tracking, carrier, notes."""
+    conn = get_db()
+    payment = conn.execute('SELECT * FROM payments WHERE id = ?', (payment_id,)).fetchone()
+    if not payment:
+        conn.close()
+        abort(404)
+
+    new_status = request.form.get('status', payment['status'])
+    tracking_number = request.form.get('tracking_number', '').strip()
+    carrier = request.form.get('carrier', '').strip()
+    admin_notes = request.form.get('admin_notes', '').strip()
+
+    changes = {}
+
+    # Update payment status if changed
+    if new_status != payment['status']:
+        changes['status'] = {'from': payment['status'], 'to': new_status}
+        now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        conn.execute('UPDATE payments SET status = ? WHERE id = ?', (new_status, payment_id))
+        if new_status == 'paid' and not payment['completed_at']:
+            conn.execute('UPDATE payments SET completed_at = ? WHERE id = ?', (now_str, payment_id))
+        # Sync auction status
+        conn.execute('UPDATE auctions SET status = ? WHERE id = ?',
+                     (new_status, payment['auction_id']))
+
+    # Update admin notes
+    conn.execute('UPDATE payments SET admin_notes = ? WHERE id = ?', (admin_notes, payment_id))
+
+    # Update shipment tracking/carrier if provided
+    shipment = conn.execute('SELECT * FROM shipments WHERE payment_id = ?', (payment_id,)).fetchone()
+    if shipment:
+        if tracking_number and tracking_number != (shipment['tracking_number'] or ''):
+            changes['tracking_number'] = {'from': shipment['tracking_number'], 'to': tracking_number}
+            conn.execute('UPDATE shipments SET tracking_number = ? WHERE payment_id = ?',
+                         (tracking_number, payment_id))
+        if carrier and carrier != (shipment['carrier'] or ''):
+            changes['carrier'] = {'from': shipment['carrier'], 'to': carrier}
+            conn.execute('UPDATE shipments SET carrier = ? WHERE payment_id = ?',
+                         (carrier, payment_id))
+
+    if changes:
+        log_audit(conn, 'order', payment_id, 'edited', changes)
+
+    conn.commit()
+    conn.close()
+    flash('Order updated successfully.', 'success')
+    return redirect(url_for('admin_order_detail', payment_id=payment_id))
+
+
+@app.route('/admin/order/<int:payment_id>/delete', methods=['POST'])
+@admin_required
+def admin_order_delete(payment_id):
+    """Delete an order (only awaiting_payment orders)."""
+    conn = get_db()
+    payment = conn.execute('SELECT * FROM payments WHERE id = ?', (payment_id,)).fetchone()
+    if not payment:
+        conn.close()
+        abort(404)
+
+    deletable = ('awaiting_payment',)
+    if payment['status'] not in deletable:
+        flash(f'Cannot delete orders with status "{payment["status"]}". '
+              f'Only awaiting_payment orders can be deleted.', 'error')
+        conn.close()
+        return redirect(url_for('admin_order_detail', payment_id=payment_id))
+
+    log_audit(conn, 'order', payment_id, 'deleted',
+              {'auction_id': payment['auction_id'], 'amount': payment['amount'],
+               'status': payment['status']})
+
+    conn.execute('DELETE FROM notifications WHERE link LIKE ?',
+                 (f'%{payment["payment_token"]}%',))
+    conn.execute('DELETE FROM shipments WHERE payment_id = ?', (payment_id,))
+    conn.execute('DELETE FROM payments WHERE id = ?', (payment_id,))
+    conn.commit()
+    conn.close()
+
+    flash('Order deleted.', 'success')
     return redirect(url_for('admin_orders'))
+
+
+@app.route('/admin/order/new', methods=['GET', 'POST'])
+@admin_required
+def admin_order_new():
+    """Create a manual order."""
+    conn = get_db()
+
+    if request.method == 'POST':
+        auction_id = request.form.get('auction_id', type=int)
+        buyer_id = request.form.get('buyer_id', type=int)
+        amount = request.form.get('amount', type=float)
+        status = request.form.get('status', 'awaiting_payment')
+        admin_notes = request.form.get('admin_notes', '').strip()
+
+        errors = []
+        if not auction_id:
+            errors.append('Please select an auction.')
+        if not buyer_id:
+            errors.append('Please select a buyer.')
+        if not amount or amount <= 0:
+            errors.append('Amount must be greater than $0.')
+
+        if errors:
+            for e in errors:
+                flash(e, 'error')
+            auctions = conn.execute("SELECT id, title FROM auctions ORDER BY title").fetchall()
+            buyers = conn.execute(
+                "SELECT id, display_name, email FROM users WHERE role = 'buyer' AND is_active = 1 ORDER BY display_name"
+            ).fetchall()
+            conn.close()
+            return render_template('admin/order_form.html', auctions=auctions,
+                                   buyers=buyers, editing=False)
+
+        token = secrets.token_urlsafe(32)
+        now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        conn.execute('''
+            INSERT INTO payments (auction_id, buyer_id, amount, status, payment_token,
+                                  admin_notes, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (auction_id, buyer_id, amount, status, token, admin_notes, now_str))
+        conn.commit()
+
+        new_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
+        log_audit(conn, 'order', new_id, 'created',
+                  {'auction_id': auction_id, 'buyer_id': buyer_id,
+                   'amount': amount, 'manual': True})
+        conn.commit()
+        conn.close()
+
+        flash('Manual order created.', 'success')
+        return redirect(url_for('admin_order_detail', payment_id=new_id))
+
+    auctions = conn.execute("SELECT id, title FROM auctions ORDER BY title").fetchall()
+    buyers = conn.execute(
+        "SELECT id, display_name, email FROM users WHERE role = 'buyer' AND is_active = 1 ORDER BY display_name"
+    ).fetchall()
+    conn.close()
+    return render_template('admin/order_form.html', auctions=auctions,
+                           buyers=buyers, editing=False)
+
+
+# --- Admin: User Management ---
+
+@app.route('/admin/users')
+@admin_required
+def admin_users():
+    """List all users with search/filter."""
+    conn = get_db()
+    search = request.args.get('q', '').strip()
+    role_filter = request.args.get('role', '')
+    status_filter = request.args.get('status', '')
+
+    query = '''
+        SELECT u.*,
+            (SELECT COUNT(*) FROM bids b WHERE b.user_id = u.id) as bid_count,
+            (SELECT COUNT(*) FROM payments p WHERE p.buyer_id = u.id) as order_count,
+            (SELECT COALESCE(SUM(p.amount), 0) FROM payments p
+             WHERE p.buyer_id = u.id AND p.status IN ('paid', 'shipped', 'completed')) as total_spent
+        FROM users u
+        WHERE 1=1
+    '''
+    params = []
+
+    if search:
+        query += ' AND (u.display_name LIKE ? OR u.email LIKE ?)'
+        params.extend([f'%{search}%', f'%{search}%'])
+    if role_filter:
+        query += ' AND u.role = ?'
+        params.append(role_filter)
+    if status_filter == 'active':
+        query += ' AND u.is_active = 1'
+    elif status_filter == 'inactive':
+        query += ' AND u.is_active = 0'
+
+    query += ' ORDER BY u.created_at DESC'
+    users = conn.execute(query, params).fetchall()
+
+    stats = {
+        'total': conn.execute("SELECT COUNT(*) FROM users").fetchone()[0],
+        'buyers': conn.execute("SELECT COUNT(*) FROM users WHERE role = 'buyer'").fetchone()[0],
+        'admins': conn.execute("SELECT COUNT(*) FROM users WHERE role = 'admin'").fetchone()[0],
+        'active': conn.execute("SELECT COUNT(*) FROM users WHERE is_active = 1").fetchone()[0],
+        'inactive': conn.execute("SELECT COUNT(*) FROM users WHERE is_active = 0").fetchone()[0],
+    }
+
+    conn.close()
+    return render_template('admin/users.html', users=users, stats=stats,
+                           search=search, role_filter=role_filter,
+                           status_filter=status_filter)
+
+
+@app.route('/admin/user/new', methods=['GET', 'POST'])
+@admin_required
+def admin_user_new():
+    """Create a new user."""
+    if request.method == 'POST':
+        email = request.form.get('email', '').lower().strip()
+        password = request.form.get('password', '')
+        display_name = request.form.get('display_name', '').strip()
+        role = request.form.get('role', 'buyer')
+
+        errors = []
+        if not email or '@' not in email:
+            errors.append('Valid email is required.')
+        if len(password) < 8:
+            errors.append('Password must be at least 8 characters.')
+        if not display_name:
+            errors.append('Display name is required.')
+        if role not in ('buyer', 'admin'):
+            errors.append('Invalid role.')
+
+        if not errors:
+            conn = get_db()
+            existing = conn.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+            if existing:
+                errors.append('An account with this email already exists.')
+                conn.close()
+
+        if errors:
+            for e in errors:
+                flash(e, 'error')
+            return render_template('admin/user_form.html', editing=False)
+
+        conn = get_db()
+        password_hash = generate_password_hash(password)
+        now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        conn.execute('''
+            INSERT INTO users (email, password_hash, display_name, role, age_verified, created_at)
+            VALUES (?, ?, ?, ?, 1, ?)
+        ''', (email, password_hash, display_name, role, now_str))
+        conn.commit()
+        new_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
+
+        log_audit(conn, 'user', new_id, 'created',
+                  {'email': email, 'role': role, 'created_by_admin': True})
+        conn.commit()
+        conn.close()
+
+        flash(f'User "{display_name}" created.', 'success')
+        return redirect(url_for('admin_users'))
+
+    return render_template('admin/user_form.html', editing=False)
+
+
+@app.route('/admin/user/<int:user_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_user_edit(user_id):
+    """Edit user profile."""
+    conn = get_db()
+    user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    if not user:
+        conn.close()
+        abort(404)
+
+    if request.method == 'POST':
+        display_name = request.form.get('display_name', '').strip()
+        email = request.form.get('email', '').lower().strip()
+        role = request.form.get('role', user['role'])
+
+        errors = []
+        if not display_name:
+            errors.append('Display name is required.')
+        if not email or '@' not in email:
+            errors.append('Valid email is required.')
+        existing = conn.execute('SELECT id FROM users WHERE email = ? AND id != ?',
+                                (email, user_id)).fetchone()
+        if existing:
+            errors.append('Another account with this email already exists.')
+
+        if errors:
+            for e in errors:
+                flash(e, 'error')
+            conn.close()
+            return render_template('admin/user_form.html', user=dict(user), editing=True)
+
+        changes = {}
+        if display_name != user['display_name']:
+            changes['display_name'] = {'from': user['display_name'], 'to': display_name}
+        if email != user['email']:
+            changes['email'] = {'from': user['email'], 'to': email}
+        if role != user['role']:
+            changes['role'] = {'from': user['role'], 'to': role}
+
+        conn.execute('UPDATE users SET display_name = ?, email = ?, role = ? WHERE id = ?',
+                     (display_name, email, role, user_id))
+
+        if changes:
+            log_audit(conn, 'user', user_id, 'edited', changes)
+
+        conn.commit()
+        conn.close()
+        flash(f'User "{display_name}" updated.', 'success')
+        return redirect(url_for('admin_users'))
+
+    conn.close()
+    return render_template('admin/user_form.html', user=dict(user), editing=True)
+
+
+@app.route('/admin/user/<int:user_id>/toggle-active', methods=['POST'])
+@admin_required
+def admin_user_toggle_active(user_id):
+    """Activate or deactivate a user."""
+    conn = get_db()
+    user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    if not user:
+        conn.close()
+        abort(404)
+
+    if user_id == current_user.id:
+        flash('You cannot deactivate your own account.', 'error')
+        conn.close()
+        return redirect(url_for('admin_users'))
+
+    new_status = 0 if user['is_active'] else 1
+    conn.execute('UPDATE users SET is_active = ? WHERE id = ?', (new_status, user_id))
+    log_audit(conn, 'user', user_id, 'toggled_active',
+              {'is_active': {'from': user['is_active'], 'to': new_status}})
+    conn.commit()
+    conn.close()
+
+    action = 'activated' if new_status else 'deactivated'
+    flash(f'User "{user["display_name"]}" {action}.', 'success')
+    return redirect(url_for('admin_users'))
+
+
+@app.route('/admin/user/<int:user_id>/reset-password', methods=['POST'])
+@admin_required
+def admin_user_reset_password(user_id):
+    """Reset a user's password."""
+    conn = get_db()
+    user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    if not user:
+        conn.close()
+        abort(404)
+
+    new_password = request.form.get('new_password', '').strip()
+    if len(new_password) < 8:
+        flash('Password must be at least 8 characters.', 'error')
+        conn.close()
+        return redirect(url_for('admin_user_edit', user_id=user_id))
+
+    password_hash = generate_password_hash(new_password)
+    conn.execute('UPDATE users SET password_hash = ? WHERE id = ?', (password_hash, user_id))
+    log_audit(conn, 'user', user_id, 'password_reset', {'reset_by_admin': True})
+    conn.commit()
+    conn.close()
+
+    flash(f'Password reset for "{user["display_name"]}".', 'success')
+    return redirect(url_for('admin_user_edit', user_id=user_id))
 
 
 # =============================================
