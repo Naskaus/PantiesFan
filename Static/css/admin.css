@@ -817,3 +817,288 @@
         justify-content: center;
     }
 }
+
+
+/* =============================================
+   FULFILLMENT PIPELINE — Dashboard Alert System
+   ============================================= */
+
+/* Section wrapper */
+.fulfillment-alert-section {
+    margin-bottom: 3rem;
+}
+
+/* --- Alert Banner --- */
+.fulfillment-alert {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.8rem;
+    background: rgba(255, 193, 7, 0.08);
+    border: 1px solid rgba(255, 193, 7, 0.25);
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    animation: alertPulse 3s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { border-left-color: #ffc107; }
+    50% { border-left-color: #e57373; }
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+    color: #ffc107;
+    flex-shrink: 0;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-content strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    margin-bottom: 0.2rem;
+}
+
+.alert-content span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* --- Pipeline Milestones --- */
+.pipeline-milestones {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.pipeline-milestones h3 {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+}
+
+.pipeline-milestones h3 i {
+    margin-right: 0.5rem;
+    color: var(--accent-gold);
+}
+
+.pipeline-track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+.pipeline-stage {
+    text-align: center;
+    flex: 0 0 auto;
+    min-width: 110px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.pipeline-stage.active {
+    opacity: 1;
+}
+
+.pipeline-count {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 0.5rem;
+}
+
+.pipeline-stage.needs-action .pipeline-count {
+    color: #ffc107;
+}
+
+.pipeline-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+    border: 2px solid;
+}
+
+.pipeline-dot.awaiting {
+    border-color: #666;
+    background: rgba(102, 102, 102, 0.3);
+}
+
+.pipeline-dot.pending {
+    border-color: #64b5f6;
+    background: rgba(33, 150, 243, 0.3);
+}
+
+.pipeline-dot.paid {
+    border-color: #81c784;
+    background: rgba(76, 175, 80, 0.3);
+}
+
+.pipeline-dot.shipped {
+    border-color: #ce93d8;
+    background: rgba(156, 39, 176, 0.3);
+}
+
+.pipeline-stage.needs-action .pipeline-dot {
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+    animation: dotGlow 2s ease-in-out infinite;
+}
+
+@keyframes dotGlow {
+    0%, 100% { box-shadow: 0 0 4px rgba(255, 193, 7, 0.3); }
+    50% { box-shadow: 0 0 12px rgba(255, 193, 7, 0.6); }
+}
+
+.pipeline-connector {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    min-width: 30px;
+    max-width: 80px;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.pipeline-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* --- Actionable Orders Mini-Table --- */
+.actionable-orders {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+}
+
+.actionable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.actionable-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    font-family: 'Playfair Display', serif;
+}
+
+.item-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Action button variants for fulfillment */
+.action-btn.action-verify {
+    color: #64b5f6;
+    border-color: #64b5f6;
+}
+
+.action-btn.action-verify:hover {
+    background: rgba(33, 150, 243, 0.15);
+}
+
+.action-btn.action-ship {
+    color: #ce93d8;
+    border-color: #ce93d8;
+}
+
+.action-btn.action-ship:hover {
+    background: rgba(156, 39, 176, 0.15);
+}
+
+.action-btn.action-deliver {
+    color: #81c784;
+    border-color: #81c784;
+}
+
+.action-btn.action-deliver:hover {
+    background: rgba(76, 175, 80, 0.15);
+}
+
+/* Row accent borders for urgency */
+.row-action-verify {
+    border-left: 3px solid #64b5f6;
+}
+
+.row-action-ship {
+    border-left: 3px solid #ce93d8;
+}
+
+.row-action-deliver {
+    border-left: 3px solid #81c784;
+}
+
+/* --- Responsive: Fulfillment Pipeline --- */
+@media (max-width: 768px) {
+    .fulfillment-alert {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.8rem;
+        padding: 1rem 1.2rem;
+    }
+
+    .pipeline-track {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .pipeline-connector {
+        width: 2px;
+        height: 20px;
+        min-width: unset;
+        max-width: unset;
+        margin: 0 auto;
+    }
+
+    .pipeline-stage {
+        min-width: unset;
+        padding: 0.3rem 0;
+    }
+
+    .pipeline-milestones {
+        padding: 1.2rem;
+    }
+
+    .actionable-header {
+        flex-direction: column;
+        gap: 0.8rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .fulfillment-alert {
+        padding: 0.8rem;
+    }
+
+    .alert-content strong {
+        font-size: 0.85rem;
+    }
+
+    .pipeline-count {
+        font-size: 1.3rem;
+    }
+
+    .pipeline-milestones h3 {
+        font-size: 0.85rem;
+    }
+}

@@ -667,6 +667,42 @@ def admin_dashboard():
     gmv_row = conn.execute("SELECT COALESCE(SUM(current_bid), 0) FROM auctions WHERE status = 'ended' AND current_bidder_id IS NOT NULL").fetchone()
     stats['total_gmv'] = gmv_row[0]
 
+    # Fulfillment pipeline counts
+    stats['orders_awaiting_payment'] = conn.execute(
+        "SELECT COUNT(*) FROM payments WHERE status = 'awaiting_payment'"
+    ).fetchone()[0]
+    stats['orders_pending_verification'] = conn.execute(
+        "SELECT COUNT(*) FROM payments WHERE status = 'pending'"
+    ).fetchone()[0]
+    stats['orders_ready_to_ship'] = conn.execute(
+        "SELECT COUNT(*) FROM payments WHERE status = 'paid'"
+    ).fetchone()[0]
+    stats['orders_shipped'] = conn.execute(
+        "SELECT COUNT(*) FROM payments WHERE status = 'shipped'"
+    ).fetchone()[0]
+    stats['orders_need_action'] = stats['orders_pending_verification'] + stats['orders_ready_to_ship']
+
+    # Actionable orders — privacy-safe (NO buyer PII: no user join, no address)
+    actionable_orders = conn.execute('''
+        SELECT p.id as payment_id, p.status as payment_status, p.amount,
+               p.processor, p.created_at as payment_created,
+               a.id as auction_id, a.title as auction_title, a.image as auction_image,
+               m.display_name as muse_name,
+               s.status as shipment_status, s.tracking_number, s.carrier
+        FROM payments p
+        JOIN auctions a ON p.auction_id = a.id
+        LEFT JOIN muse_profiles m ON a.muse_id = m.id
+        LEFT JOIN shipments s ON s.payment_id = p.id
+        WHERE p.status IN ('pending', 'paid', 'shipped')
+        ORDER BY
+            CASE p.status
+                WHEN 'pending' THEN 0
+                WHEN 'paid' THEN 1
+                WHEN 'shipped' THEN 2
+            END,
+            p.created_at ASC
+    ''').fetchall()
+
     # All auctions with details
     auctions = conn.execute('''
         SELECT a.*, m.display_name as muse_name,
@@ -680,7 +716,8 @@ def admin_dashboard():
     ''').fetchall()
 
     conn.close()
-    return render_template('admin/dashboard.html', stats=stats, auctions=auctions)
+    return render_template('admin/dashboard.html', stats=stats, auctions=auctions,
+                           actionable_orders=actionable_orders)
 
 
 @app.route('/admin/auction/new', methods=['GET', 'POST'])

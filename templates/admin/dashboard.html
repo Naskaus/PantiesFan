@@ -57,6 +57,135 @@
         </div>
     </div>
 
+    <!-- Fulfillment Pipeline Alert -->
+    {% if stats.orders_need_action > 0 or stats.orders_shipped > 0 %}
+    <div class="fulfillment-alert-section">
+
+        <!-- Alert Banner -->
+        {% if stats.orders_need_action > 0 %}
+        <div class="fulfillment-alert">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>{{ stats.orders_need_action }} order{{ 's' if stats.orders_need_action != 1 else '' }} need{{ '' if stats.orders_need_action != 1 else 's' }} your attention</strong>
+                <span>
+                    {% if stats.orders_pending_verification > 0 %}
+                        {{ stats.orders_pending_verification }} pending verification
+                    {% endif %}
+                    {% if stats.orders_pending_verification > 0 and stats.orders_ready_to_ship > 0 %}&bull;{% endif %}
+                    {% if stats.orders_ready_to_ship > 0 %}
+                        {{ stats.orders_ready_to_ship }} ready to ship
+                    {% endif %}
+                </span>
+            </div>
+            <a href="{{ url_for('admin_orders') }}" class="admin-btn primary small">
+                <i class="fas fa-arrow-right"></i> Go to Orders
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Pipeline Status Milestones -->
+        <div class="pipeline-milestones">
+            <h3><i class="fas fa-shipping-fast"></i> Fulfillment Pipeline</h3>
+            <div class="pipeline-track">
+                <div class="pipeline-stage {% if stats.orders_awaiting_payment > 0 %}active{% endif %}">
+                    <div class="pipeline-count">{{ stats.orders_awaiting_payment }}</div>
+                    <div class="pipeline-dot awaiting"></div>
+                    <div class="pipeline-label">Awaiting Payment</div>
+                </div>
+                <div class="pipeline-connector"></div>
+                <div class="pipeline-stage {% if stats.orders_pending_verification > 0 %}active needs-action{% endif %}">
+                    <div class="pipeline-count">{{ stats.orders_pending_verification }}</div>
+                    <div class="pipeline-dot pending"></div>
+                    <div class="pipeline-label">Verify Payment</div>
+                </div>
+                <div class="pipeline-connector"></div>
+                <div class="pipeline-stage {% if stats.orders_ready_to_ship > 0 %}active needs-action{% endif %}">
+                    <div class="pipeline-count">{{ stats.orders_ready_to_ship }}</div>
+                    <div class="pipeline-dot paid"></div>
+                    <div class="pipeline-label">Ready to Ship</div>
+                </div>
+                <div class="pipeline-connector"></div>
+                <div class="pipeline-stage {% if stats.orders_shipped > 0 %}active{% endif %}">
+                    <div class="pipeline-count">{{ stats.orders_shipped }}</div>
+                    <div class="pipeline-dot shipped"></div>
+                    <div class="pipeline-label">In Transit</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actionable Orders Mini-Table (privacy-safe: NO buyer PII) -->
+        {% if actionable_orders %}
+        <div class="actionable-orders">
+            <div class="actionable-header">
+                <h3>Orders Requiring Action</h3>
+                <a href="{{ url_for('admin_orders') }}" class="admin-btn small">View All Orders <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Item</th>
+                            <th>Muse</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in actionable_orders %}
+                        <tr class="{% if o['payment_status'] == 'paid' %}row-action-ship{% elif o['payment_status'] == 'pending' %}row-action-verify{% else %}row-action-deliver{% endif %}">
+                            <td>#{{ o['payment_id'] }}</td>
+                            <td>
+                                <div class="item-cell">
+                                    {% if o['auction_image'] %}
+                                    <div class="table-thumb">
+                                        {% if o['auction_image'].startswith('uploads/') %}
+                                        <img src="{{ url_for('static', filename=o['auction_image']) }}" alt="">
+                                        {% else %}
+                                        <img src="{{ url_for('static', filename='images/' + o['auction_image']) }}" alt="">
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    <span>{{ o['auction_title'][:35] }}{% if o['auction_title']|length > 35 %}...{% endif %}</span>
+                                </div>
+                            </td>
+                            <td>{{ o['muse_name'] or 'N/A' }}</td>
+                            <td class="price-cell">${{ "%.2f"|format(o['amount']) }}</td>
+                            <td>
+                                <span class="status-badge status-{{ o['payment_status'] }}">{{ o['payment_status']|upper }}</span>
+                                {% if o['shipment_status'] %}
+                                <br><small class="text-muted">Ship: {{ o['shipment_status'] }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="actions-cell">
+                                {% if o['payment_status'] == 'pending' %}
+                                <a href="{{ url_for('admin_orders') }}" class="action-btn action-verify" title="Verify Payment">
+                                    <i class="fas fa-check-circle"></i>
+                                </a>
+                                {% elif o['payment_status'] == 'paid' %}
+                                <a href="{{ url_for('admin_orders') }}" class="action-btn action-ship" title="Ship Order">
+                                    <i class="fas fa-truck"></i>
+                                </a>
+                                {% elif o['payment_status'] == 'shipped' %}
+                                <a href="{{ url_for('admin_orders') }}" class="action-btn action-deliver" title="Mark Delivered">
+                                    <i class="fas fa-box-open"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
     <!-- Auctions Table -->
     <div class="admin-section">
         <h2>All Auctions</h2>
