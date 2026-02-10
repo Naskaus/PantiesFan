@@ -1,0 +1,18 @@
+tunnel: f661a430-3bf8-4e34-97aa-7b759721adb1
+credentials-file: /home/seb/.cloudflared/f661a430-3bf8-4e34-97aa-7b759721adb1.json
+ingress:
+  - hostname: naskaus.com
+    service: http://localhost:8080
+  - hostname: admin.naskaus.com
+    service: http://localhost:8080
+  - hostname: staff.naskaus.com
+    service: http://localhost:8001
+  - hostname: tasks.naskaus.com
+    service: http://localhost:8002
+  - hostname: aperipommes.naskaus.com
+    service: http://localhost:8003
+  - hostname: pantiesfan.com
+    service: http://localhost:8005
+  - hostname: www.pantiesfan.com
+    service: http://localhost:8005
+  - service: http_status:404

@@ -738,10 +738,10 @@
     margin-bottom: 1.5rem;
 }
 
-/* --- Responsive --- */
-@media (max-width: 768px) {
+/* --- Responsive — Tablet --- */
+@media (max-width: 1024px) {
     .buyer-container {
-        padding: 6rem 1rem 2rem;
+        padding: 7rem 1.5rem 3rem;
     }
 
     .payment-layout {
@@ -751,23 +751,60 @@
     .payment-actions-panel {
         position: static;
     }
+}
 
-    .order-card {
-        flex-direction: column;
+/* --- Responsive — Mobile --- */
+@media (max-width: 768px) {
+    .buyer-container {
+        padding: 5rem 0.8rem 2rem;
     }
 
-    .order-card-image {
-        width: 100%;
-        height: 200px;
+    /* Dashboard header */
+    .dashboard-header h1 {
+        font-size: 1.8rem;
     }
 
+    .dashboard-greeting {
+        font-size: 0.9rem;
+    }
+
+    /* Tabs */
+    .dash-tabs {
+        gap: 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dash-tab {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.5px;
+    }
+
+    .dash-tab i {
+        font-size: 0.8rem;
+    }
+
+    .tab-badge {
+        font-size: 0.55rem;
+        padding: 0.1rem 0.4rem;
+    }
+
+    /* Bid & Won cards */
     .bid-card, .won-card {
         flex-direction: column;
     }
 
     .bid-card-img, .won-card-img {
         width: 100%;
-        height: 150px;
+        height: 160px;
+    }
+
+    .bid-card-info, .won-card-info {
+        padding: 1rem;
+    }
+
+    .bid-card-info h4, .won-card-info h4 {
+        font-size: 1rem;
     }
 
     .bid-card-meta {
@@ -775,16 +812,167 @@
         gap: 0.5rem;
     }
 
+    .bid-card-status {
+        flex-wrap: wrap;
+    }
+
+    .order-status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    /* Notifications panel */
+    .notifications-panel {
+        padding: 1rem;
+    }
+
+    .notif-item {
+        padding: 0.6rem 0.8rem;
+        gap: 0.7rem;
+    }
+
+    .notif-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+    }
+
+    .notif-content strong {
+        font-size: 0.8rem;
+    }
+
+    .notif-content p {
+        font-size: 0.75rem;
+    }
+
+    /* Payment page */
+    .payment-summary h1 {
+        font-size: 1.5rem;
+    }
+
+    .order-card {
+        flex-direction: column;
+    }
+
+    .order-card-image {
+        width: 100%;
+        height: 180px;
+    }
+
+    .order-card-info h3 {
+        font-size: 1.1rem;
+    }
+
+    .price-breakdown {
+        padding: 1rem;
+    }
+
+    .price-row {
+        font-size: 0.85rem;
+    }
+
+    .payment-status-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.2rem 1rem;
+        gap: 0.8rem;
+    }
+
+    .payment-status-banner h2 {
+        font-size: 1.1rem;
+    }
+
+    .payment-status-banner p {
+        font-size: 0.8rem;
+    }
+
+    /* Payment methods */
+    .payment-method-card .method-content {
+        padding: 0.8rem 1rem;
+        gap: 0.8rem;
+    }
+
+    .payment-method-card .method-content span {
+        font-size: 0.85rem;
+    }
+
+    .pay-now-btn {
+        padding: 0.9rem 1.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* Forms */
     .form-row-inline {
         grid-template-columns: 1fr;
     }
 
-    .dash-tabs {
-        gap: 0;
+    /* Panel sections */
+    .panel-section {
+        padding: 1.2rem;
+    }
+
+    .panel-section h3 {
+        font-size: 0.9rem;
+    }
+
+    /* Timeline */
+    .timeline-step {
+        padding: 0.6rem 0;
+    }
+
+    .step-text {
+        font-size: 0.8rem;
+    }
+
+    /* Address panel */
+    .address-panel {
+        max-width: 100%;
+    }
+
+    /* Bid history table */
+    .table-wrapper {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-table {
+        min-width: 500px;
+    }
+}
+
+/* --- Responsive — Small Mobile --- */
+@media (max-width: 480px) {
+    .buyer-container {
+        padding: 4.5rem 0.5rem 2rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.5rem;
     }
 
     .dash-tab {
-        padding: 0.8rem 1rem;
-        font-size: 0.7rem;
+        padding: 0.6rem 0.5rem;
+        font-size: 0.6rem;
+    }
+
+    .bid-card-img, .won-card-img {
+        height: 130px;
+    }
+
+    .won-card-price {
+        font-size: 1.1rem;
+    }
+
+    .payment-summary h1 {
+        font-size: 1.3rem;
+    }
+
+    .order-card-image {
+        height: 150px;
+    }
+
+    .payment-deadline {
+        font-size: 0.8rem;
+        padding: 0.6rem 0.8rem;
     }
 }

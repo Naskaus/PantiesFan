@@ -873,25 +873,442 @@ footer {
     color: #64b5f6;
 }
 
-/* --- Responsive --- */
-@media (max-width: 768px) {
+/* =============================================
+   HAMBURGER MENU BUTTON
+   ============================================= */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001;
+}
+
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text-main);
+    transition: all 0.3s ease;
+}
+
+/* =============================================
+   MOBILE SLIDE-OUT MENU
+   ============================================= */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-menu-overlay.open {
+    display: block;
+    opacity: 1;
+}
+
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 280px;
+    height: 100%;
+    background: #111;
+    z-index: 9999;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu.open {
+    right: 0;
+}
+
+.mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.mobile-menu-header .logo {
+    font-size: 1.2rem;
+}
+
+.mobile-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.mobile-close:hover {
+    color: var(--text-main);
+}
+
+.mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.mobile-menu-links a {
+    padding: 0.9rem 1.5rem;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.2s ease;
+}
+
+.mobile-menu-links a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-gold);
+}
+
+.mobile-menu-auth {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0;
+}
+
+.mobile-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.5rem;
+    color: var(--accent-gold);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 0.5rem;
+}
+
+.mobile-user-info i {
+    font-size: 1.3rem;
+}
+
+.mobile-menu-auth a {
+    padding: 0.9rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.mobile-menu-auth a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.mobile-menu-auth .mobile-logout {
+    color: #e57373;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 1.2rem;
+}
+
+.mobile-menu-auth .mobile-signin {
+    color: var(--accent-gold);
+    font-weight: 600;
+}
+
+/* =============================================
+   RESPONSIVE — TABLETS (≤ 1024px)
+   ============================================= */
+@media (max-width: 1024px) {
+    nav {
+        padding: 1.5rem 2rem;
+    }
+
+    nav.scrolled {
+        padding: 1rem 2rem;
+    }
+
+    .nav-links {
+        gap: 1.5rem;
+    }
+
     .hero h1 {
-        font-size: 3rem;
+        font-size: 3.5rem;
+    }
+
+    .manifesto h2 {
+        font-size: 2.5rem;
+    }
+
+    .cta-content h2 {
+        font-size: 2.5rem;
+    }
+
+    .collection {
+        padding: 3rem 2rem 6rem;
+    }
+
+    .section-header {
+        margin-bottom: 2rem;
+    }
+
+    .card-img-container {
+        height: 300px;
+    }
+}
+
+/* =============================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ============================================= */
+@media (max-width: 768px) {
+    /* --- Nav: show hamburger, hide desktop nav --- */
+    .hamburger {
+        display: flex;
     }
 
     .nav-links {
         display: none;
     }
 
-    nav {
-        padding: 1.5rem;
+    .nav-auth {
+        display: none;
     }
 
+    nav {
+        padding: 1rem 1.2rem;
+    }
+
+    nav.scrolled {
+        padding: 0.8rem 1.2rem;
+    }
+
+    .logo {
+        font-size: 1.3rem;
+    }
+
+    /* --- Hero --- */
+    .hero h1 {
+        font-size: 2.4rem;
+        letter-spacing: -1px;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+        margin-bottom: 2rem;
+    }
+
+    .cta-button {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.75rem;
+    }
+
+    .scroll-indicator {
+        bottom: 1.5rem;
+    }
+
+    .scroll-indicator span {
+        font-size: 0.7rem;
+    }
+
+    /* --- Manifesto --- */
+    .manifesto {
+        padding: 4rem 1.5rem;
+    }
+
+    .manifesto h2 {
+        font-size: 2rem;
+    }
+
+    .manifesto p {
+        font-size: 0.95rem;
+    }
+
+    /* --- Collection / Auctions --- */
     .collection {
-        padding: 2rem;
+        padding: 2rem 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .card-img-container {
+        height: 250px;
+    }
+
+    .card-info {
+        padding: 1.2rem;
+    }
+
+    .card-title {
+        font-size: 1.05rem;
+    }
+
+    .bid-input-row {
+        gap: 0.4rem;
+    }
+
+    .bid-input-row input {
+        padding: 0.7rem;
+        font-size: 0.85rem;
+    }
+
+    .bid-input-row button {
+        padding: 0.7rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    /* --- How It Works --- */
+    .how-it-works {
+        padding: 4rem 1.5rem;
+    }
+
+    .hiw-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .hiw-step h3 {
+        font-size: 1.2rem;
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* --- Packaging --- */
+    .packaging-section {
+        padding: 4rem 1.5rem;
+    }
+
+    .packaging-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    /* --- CTA --- */
+    .cta-section {
+        padding: 6rem 1.5rem;
+        background-attachment: scroll !important; /* Fix iOS parallax */
+    }
+
+    .cta-content h2 {
+        font-size: 2rem;
+    }
+
+    .cta-content p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* --- Auth --- */
+    .auth-container {
+        padding: 1rem;
+        padding-top: 6rem;
     }
 
     .auth-box {
-        padding: 2rem;
+        padding: 2rem 1.5rem;
+    }
+
+    .auth-box h2 {
+        font-size: 1.6rem;
+    }
+
+    /* --- Footer --- */
+    footer {
+        padding: 3rem 1.5rem;
+    }
+
+    .footer-links {
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .footer-logo {
+        font-size: 1.2rem;
+    }
+
+    /* --- Flash Messages --- */
+    .flash-messages {
+        max-width: 100%;
+        right: 10px !important;
+        left: 10px !important;
+    }
+}
+
+/* =============================================
+   RESPONSIVE — SMALL MOBILE (≤ 480px)
+   ============================================= */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero p {
+        font-size: 0.8rem;
+        letter-spacing: 1.5px;
+    }
+
+    .manifesto h2 {
+        font-size: 1.6rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .card-img-container {
+        height: 200px;
+    }
+
+    .packaging-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-content h2 {
+        font-size: 1.6rem;
+    }
+
+    .hiw-grid {
+        gap: 2rem;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
     }
 }

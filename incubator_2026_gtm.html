@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incubator OS 2026 — Venture Factory</title>
+    <style>
+        :root {
+            --bg: #0f1115;
+            /* Dark graphite */
+            --surface: #1a1d23;
+            --surface-hover: #23272f;
+            --primary: #d2a8ff;
+            /* Claude Purple-ish */
+            --accent: #4cc9f0;
+            /* Cyan for Tech */
+            --gold: #ffd700;
+            /* Money Color */
+            --hardware: #ff6b6b;
+            /* Raspberry Pi Color */
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #34d399;
+            --danger: #f87171;
+        }
+
+        /* RESET & BASE */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        .meta-tag {
+            background: rgba(210, 168, 255, 0.1);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(210, 168, 255, 0.2);
+        }
+
+        /* NAVIGATION TABS */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 1px 0 0 var(--primary);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .tab-btn.gold {
+            color: var(--gold);
+        }
+
+        .tab-btn.gold.active {
+            box-shadow: 0 1px 0 0 var(--gold);
+        }
+
+        .tab-btn.hardware {
+            color: var(--hardware);
+        }
+
+        .tab-btn.hardware.active {
+            box-shadow: 0 1px 0 0 var(--hardware);
+        }
+
+        /* CONTENT SECTIONS */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #fff;
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 30px 0 15px 0;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* CARDS & GRIDS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .card.money {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .card.hardware {
+            border-color: var(--hardware);
+            background: rgba(255, 107, 107, 0.05);
+        }
+
+        .tool-badge {
+            display: inline-block;
+            background: #2d3748;
+            color: #a0aec0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .tool-badge.hardware {
+            background: #4a1515;
+            color: #fca5a5;
+        }
+
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td strong {
+            color: var(--accent);
+        }
+
+        /* BUTTONS */
+        .action-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .print-btn {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            margin-left: 10px;
+        }
+
+        /* TAGS FOR COMPLEXITY/COST */
+        .tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .tag.s {
+            background: #064e3b;
+            color: #6ee7b7;
+        }
+
+        .tag.m {
+            background: #78350f;
+            color: #fcd34d;
+        }
+
+        .tag.l {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                font-size: 11pt;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            header {
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+            }
+
+            h1 {
+                background: none;
+                -webkit-text-fill-color: #000;
+                color: #000;
+            }
+
+            .meta-tag,
+            .tool-badge {
+                border: 1px solid #ccc;
+                color: #000;
+                background: #eee;
+            }
+
+            .tabs,
+            .print-controls {
+                display: none !important;
+            }
+
+            .section {
+                display: block !important;
+                page-break-after: always;
+                opacity: 1;
+                transform: none;
+            }
+
+            .card {
+                border: 1px solid #000;
+                background: #fff;
+                box-shadow: none;
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+
+            table {
+                border: 1px solid #000;
+                background: #fff;
+                width: 100%;
+                page-break-inside: avoid;
+            }
+
+            th {
+                background: #eee;
+                color: #000;
+                border-bottom: 1px solid #000;
+            }
+
+            td {
+                border-bottom: 1px solid #ccc;
+                color: #000;
+            }
+
+            h2 {
+                color: #000;
+                border-left: 4px solid #000;
+                margin-top: 0;
+            }
+
+            h3 {
+                color: #000;
+                margin-top: 20px;
+            }
+
+            p,
+            li {
+                color: #000;
+            }
+
+            a {
+                text-decoration: none;
+                color: #000;
+            }
+
+            .tab-btn {
+                display: none;
+            }
+
+            /* A4 layout helper */
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Incubator 2026</h1>
+                <div class="subtitle">Vibe Coding • Agents • Monetization • Hardware</div>
+            </div>
+            <div class="print-controls">
+                <button class="action-btn print-btn" onclick="window.print()">🖨️ Imprimer PDF (A4)</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="openTab('overview')">1. Vision & Stack</button>
+            <button class="tab-btn" onclick="openTab('schedule')">2. Programme 12 Sem.</button>
+            <button class="tab-btn hardware" onclick="openTab('hardware')">🔌 3. Hardware / Pi5</button>
+            <button class="tab-btn" onclick="openTab('os')">4. OS & Règles</button>
+            <button class="tab-btn gold" onclick="openTab('gtm')">💰 5. MONETIZATION & GTM</button>
+            <button class="tab-btn" onclick="openTab('today')">⚡ WORKSHOP NOW</button>
+        </nav>
+
+        <!-- SECTION 1: VISION -->
+        <div id="overview" class="section active">
+            <h2>Philosophie & Tech Stack 2026</h2>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>La Mission</h3>
+                    <p>Transformer un trio complémentaire (Tech Lead, Designer/Biz, Agency Owner) en une <strong>Venture
+                            Factory</strong>.</p>
+                    <p>Nous assemblons des briques d'IA pour <strong>vendre</strong> des produits.</p>
+                    <ul>
+                        <li><strong>Vibe Coding :</strong> Si ça prend > 48h pour un proto, c'est trop long.</li>
+                        <li><strong>Hardware First :</strong> On déploie sur NOS propres serveurs (Pi 5) immédiatement.
+                        </li>
+                        <li><strong>Sell First :</strong> On achète le NDD (Nom de Domaine) avant de coder la première
+                            ligne.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>L'Arsenal 2026</h3>
+
+                    <h4>🧠 Cerveaux (LLMs)</h4>
+                    <div>
+                        <span class="tool-badge">Claude 4.5 Sonnet (Coding)</span>
+                        <span class="tool-badge">Gemini 3 Pro (Video/Vision)</span>
+                    </div>
+
+                    <h4>🤖 Agents & Dev</h4>
+                    <div>
+                        <span class="tool-badge">Manus.im (Agent Navigant)</span>
+                        <span class="tool-badge">Clawd.bot (Dev Bot)</span>
+                        <span class="tool-badge">Claude CoWork</span>
+                    </div>
+
+                    <h4>🔌 Infra & Hardware</h4>
+                    <div>
+                        <span class="tool-badge hardware">Raspberry Pi 5 (8GB)</span>
+                        <span class="tool-badge hardware">NVMe Base (Fast Storage)</span>
+                        <span class="tool-badge">Coolify (Self-hosting)</span>
+                    </div>
+
+                    <h4>💰 Vente</h4>
+                    <div>
+                        <span class="tool-badge">Stripe / LemonSqueezy</span>
+                        <span class="tool-badge">n8n (Backbone)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: CALENDRIER -->
+        <div id="schedule" class="section">
+            <h2>Programme 12 Semaines : "Code to Cash"</h2>
+            <p>Objectif : 20 projets prêts, 1 winner. <strong>Hardware actif dès la Semaine 2.</strong></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 8%">Sem</th>
+                        <th style="width: 15%">Phase</th>
+                        <th style="width: 30%">Focus & Livrables Techniques</th>
+                        <th>Focus Business / GTM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>SETUP</td>
+                        <td><strong>Env Logiciel :</strong> Claude CoWork, Node, Python.<br><em>Homework : Commander
+                                Raspberry Pi 5.</em></td>
+                        <td>Brainstorming du nom de la "Holding" (ex: VentureHub).</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>INFRA</td>
+                        <td><strong>⚡ HARDWARE (Urgent) :</strong> Setup Pi 5 en local.<br>Install Docker + Coolify
+                            (Notre "Heroku" maison).</td>
+                        <td><strong>Action :</strong> Acheter le nom de domaine principal (Brand).</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>WEB APPS</td>
+                        <td><strong>Self-Hosting :</strong> On héberge nos premiers sites HTML sur le Pi
+                            5.<br>Accessible sur le réseau local.</td>
+                        <td>Landing Page "Coming Soon" déployée sur notre propre serveur.</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>AUTO</td>
+                        <td><strong>n8n sur Pi 5 :</strong> Install n8n version self-hosted (Gratuit,
+                            illimité).<br>Création 1er workflow.</td>
+                        <td>Capture d'emails : Configurer Mailgun/Resend sur n8n.</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>AGENTS</td>
+                        <td><strong>Manus.im :</strong> Agent qui bosse sur le web (Lead Gen).</td>
+                        <td>Packager l'agent : Vendre du "Lead à la demande" (Service).</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>DATA</td>
+                        <td><strong>Files & MCP :</strong> Claude nettoie des fichiers Excel/PDF.</td>
+                        <td>Vendre l'outil en B2B : "Audit automatique de factures".</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>PUBLIC</td>
+                        <td><strong>Tunnels Cloudflare :</strong> Rendre le Pi 5 accessible au monde (URL https).</td>
+                        <td>Setup Stripe / LemonSqueezy (Test Mode). CGV via IA.</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>PORTFOLIO</td>
+                        <td><strong>Le Hub (Arcade) :</strong> Site central regroupant nos jeux.</td>
+                        <td>Lancement du "Store" sur le nouveau domaine (ex: `projects.newdomain.com`).</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>SPRINT 1</td>
+                        <td><strong>Micro-SaaS :</strong> App B2B (ex: Outil Agence OF).</td>
+                        <td>Cold outreach (LinkedIn) : Trouver 3 beta-testeurs payants.</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>SPRINT 2</td>
+                        <td><strong>Web Game / Viral :</strong> Jeu simple hébergé sur le Pi 5.</td>
+                        <td>Lancement Reddit/TikTok. Stress test du serveur.</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>SCALE</td>
+                        <td><strong>Optimisation :</strong> Si le Pi 5 sature -> Migration VPS Cloud.</td>
+                        <td>Lancement Product Hunt. Pub Facebook (Budget 50$).</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>LAUNCH</td>
+                        <td><strong>Grand Soir :</strong> 20 Projets en vitrine.</td>
+                        <td><strong>Premier encaissement ($).</strong> Analyse ROI.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SECTION 3: HARDWARE -->
+        <div id="hardware" class="section">
+            <h2 style="color: var(--hardware); border-color: var(--hardware);">⚡ Hardware : Le "Private Cloud"</h2>
+            <p>Pourquoi payer AWS quand on a un supercalculateur à la maison ?</p>
+
+            <div class="grid-2">
+                <div class="card hardware">
+                    <h3>Le Kit de Survie (A commander NOW)</h3>
+                    <ul>
+                        <li><strong>Raspberry Pi 5 (8GB RAM)</strong> : Indispensable pour l'IA locale.</li>
+                        <li><strong>NVMe Base + SSD 500GB</strong> : Les cartes SD sont trop lentes. Il faut du SSD pour
+                            les bases de données.</li>
+                        <li><strong>Alimentation Officielle 27W</strong> : Le Pi 5 consomme.</li>
+                        <li><strong>Boitier avec Ventilateur</strong> : Ça va chauffer.</li>
+                    </ul>
+                    <div style="margin-top: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px;">
+                        <strong>Budget approx :</strong> ~5,000 - 8,000 THB.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Ce qu'on va installer dessus (Stack Coolify)</h3>
+                    <p>On transforme le Pi en mini-Datacenter :</p>
+                    <ul>
+                        <li><strong>Coolify :</strong> Interface graphique pour gérer nos apps (Comme Vercel mais
+                            gratuit).</li>
+                        <li><strong>n8n :</strong> Automatisation illimitée (pas de limite d'exécutions).</li>
+                        <li><strong>PostgreSQL :</strong> Notre base de données pour tous les projets.</li>
+                        <li><strong>Cloudflare Tunnel :</strong> Pour exposer le Pi sur internet en sécurité (https)
+                            sans ouvrir la box.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: OS -->
+        <div id="os" class="section">
+            <h2>Incubator Operating System</h2>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Rôles & Responsabilités</h3>
+                    <ul>
+                        <li><strong>Seb (CTO)</strong> : Maître du Raspberry Pi & des APIs.</li>
+                        <li><strong>Phil (CPO/Sales)</strong> : Emballe le produit. Il achète les domaines et fait les
+                            logos AVANT le code.</li>
+                        <li><strong>Antonin (Ops/User 0)</strong> : Crash-testeur. Si ça ne marche pas sur son
+                            téléphone, on jette.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Règles "Cash Flow First"</h3>
+                    <ol>
+                        <li><strong>New Domain Mandatory :</strong> On n'utilise PAS naskaus.com. On achète un nouveau
+                            domaine pour le collectif (ex: `NeonVentures.io`).</li>
+                        <li><strong>Kill Switch 48h :</strong> Si un proto ne tourne pas en 48h, on abandonne.</li>
+                        <li><strong>Self-Host First :</strong> On déploie sur le Pi 5 d'abord. On paie le cloud
+                            seulement si on a trop de clients.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: GTM & MONEY -->
+        <div id="gtm" class="section">
+            <h2 style="color: var(--gold); border-color: var(--gold);">💰 Monetization & Go-To-Market</h2>
+            <p>Comment on passe de "J'ai codé un truc sur mon Pi 5" à "J'ai reçu un virement".</p>
+
+            <div class="grid-2">
+                <div class="card money">
+                    <h3>1. Stratégie "Le Hub Central" (New Domain)</h3>
+                    <p>On ne lance pas 20 sites isolés. On crée <strong>une destination</strong>.</p>
+                    <ul>
+                        <li><strong>Action Semaine 2 :</strong> Acheter un domaine "marque ombrelle" (ex:
+                            <code>neon-labs.gg</code>, <code>vibe-factory.io</code>).</li>
+                        <li><strong>Le Concept :</strong> Un portail style "Arcade" ou "Tools" qui liste tous nos
+                            projets.</li>
+                        <li><strong>L'Appât (Magnet) :</strong> Des mini-jeux gratuits (hébergés sur le Pi) pour attirer
+                            du trafic pas cher.</li>
+                        <li><strong>La Vente :</strong> Bannières pour nos outils B2B sur les pages de jeux.</li>
+                    </ul>
+                </div>
+                <div class="card money">
+                    <h3>2. Vendre des Agents (Service-as-a-Software)</h3>
+                    <p>On ne vend plus du logiciel, on vend du <strong>Résultat</strong>.</p>
+                    <ul>
+                        <li><strong>Offre :</strong> "Recevez 10 leads qualifiés chaque lundi".</li>
+                        <li><strong>Back-office :</strong> Un agent Manus.im + n8n qui tourne sur le Pi 5.</li>
+                        <li><strong>Pricing :</strong> Abonnement mensuel (Recuring Revenue).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="color: var(--gold); margin-top: 30px;">3. Les Canaux de Vente</h3>
+            <table style="border-color: var(--gold);">
+                <thead>
+                    <tr>
+                        <th>Canal</th>
+                        <th>Pour quel projet ?</th>
+                        <th>Action Concrète</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>App Stores</strong></td>
+                        <td>Jeux Casual, Utilitaires.</td>
+                        <td>Wrapper l'app Web avec <strong>Capacitor</strong>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Product Hunt</strong></td>
+                        <td>SaaS Tech, Outils Design.</td>
+                        <td>Lancement "Mardi 9h". Vidéo démo obligatoire.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SEO "Programmatic"</strong></td>
+                        <td>Outils niche (ex: "Convertisseur Facture").</td>
+                        <td>Générer 500 pages (Facture Elec, Eau, Tel...) pour capter le trafic Google.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SECTION 6: WORKSHOP TODAY -->
+        <div id="today" class="section">
+            <h2>⚡ AGENDA WORKSHOP AUJOURD'HUI</h2>
+            <p><strong>Focus :</strong> Setup Software & Commande Hardware.</p>
+
+            <table>
+                <tr>
+                    <th style="width: 15%">Timing</th>
+                    <th>Activité</th>
+                    <th>Détails & Outils</th>
+                </tr>
+                <tr>
+                    <td>10 min</td>
+                    <td><strong>Vision & Cash</strong></td>
+                    <td>Seb : "On monte une usine". Présentation du plan Hardware (Pi 5) et GTM.</td>
+                </tr>
+                <tr>
+                    <td>10 min</td>
+                    <td><strong>Commande Hardware</strong></td>
+                    <td><strong>Action immédiate :</strong> Aller sur le site revendeur Thaï (Cytron/Lazada) et
+                        commander le kit Pi 5.</td>
+                </tr>
+                <tr>
+                    <td>30 min</td>
+                    <td><strong>Environment Install</strong></td>
+                    <td>Terminal, Node, Python, `claude-code`. Check : `claude` répond dans le terminal.</td>
+                </tr>
+                <tr>
+                    <td>20 min</td>
+                    <td><strong>Google AI Studio</strong></td>
+                    <td>Import `index.html`. Prompt : "Cyberpunk Style". Résultats instantanés.</td>
+                </tr>
+                <tr>
+                    <td>30 min</td>
+                    <td><strong>Live Vibe Coding</strong></td>
+                    <td><strong>Défi :</strong> Script "Calculatrice Commission OF". <br><em>Prompt : "Script Python qui
+                            demande CA, enlève 20%, affiche le reste."</em></td>
+                </tr>
+                <tr>
+                    <td>10 min</td>
+                    <td><strong>Wrap Up</strong></td>
+                    <td>Création compte Gumloop. Devoir : Trouver le nom du <strong>Nouveau Domaine</strong>.</td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        function openTab(tabId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            const buttons = document.querySelectorAll('.tab-btn');
+            for (let btn of buttons) {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>

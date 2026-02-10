@@ -661,10 +661,21 @@
     color: #81c784;
 }
 
-/* --- Responsive --- */
+/* --- Responsive — Tablet --- */
+@media (max-width: 1024px) {
+    .admin-container {
+        padding: 7rem 1.5rem 3rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* --- Responsive — Mobile --- */
 @media (max-width: 768px) {
     .admin-container {
-        padding: 6rem 1rem 2rem;
+        padding: 5rem 0.8rem 2rem;
     }
 
     .admin-header {
@@ -672,34 +683,137 @@
         align-items: flex-start;
     }
 
+    .admin-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .admin-actions {
+        width: 100%;
+    }
+
+    .admin-btn {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.8rem;
+    }
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.4rem;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
     }
 
     .form-row.two-col {
         grid-template-columns: 1fr;
     }
 
-    .muse-profile-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+    .admin-form-card {
+        padding: 1.5rem;
     }
 
-    .muse-profile-stats {
-        justify-content: center;
+    /* Tables: make them scroll horizontally */
+    .table-wrapper {
+        -webkit-overflow-scrolling: touch;
     }
 
     .admin-table {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
+        min-width: 700px; /* force horizontal scroll */
     }
 
     .admin-table th,
     .admin-table td {
-        padding: 0.5rem;
+        padding: 0.5rem 0.6rem;
     }
 
+    .admin-section h2 {
+        font-size: 1.2rem;
+    }
+
+    /* Muse grid */
     .muse-grid {
         grid-template-columns: 1fr;
+    }
+
+    .muse-card {
+        padding: 1.2rem;
+    }
+
+    /* Muse profile page */
+    .muse-profile-container {
+        padding: 5rem 1rem 3rem;
+    }
+
+    .muse-profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .muse-profile-avatar {
+        width: 90px;
+        height: 90px;
+    }
+
+    .muse-profile-info h1 {
+        font-size: 1.8rem;
+    }
+
+    .muse-profile-bio {
+        font-size: 0.9rem;
+    }
+
+    .muse-profile-stats {
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
+    /* Bid summary row */
+    .bid-summary-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* --- Responsive — Small Mobile --- */
+@media (max-width: 480px) {
+    .admin-container {
+        padding: 4.5rem 0.5rem 2rem;
+    }
+
+    .admin-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .stat-card {
+        padding: 0.8rem;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .admin-actions {
+        flex-direction: column;
+    }
+
+    .admin-btn {
+        width: 100%;
+        justify-content: center;
     }
 }

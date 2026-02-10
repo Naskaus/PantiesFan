@@ -49,7 +49,41 @@
                 <a href="{{ url_for('login') }}" class="cta-button">Sign In</a>
             {% endif %}
         </div>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
     </nav>
+
+    <!-- Mobile slide-out menu -->
+    <div class="mobile-menu-overlay" id="mobile-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <span class="logo">PANTIESFAN</span>
+            <button class="mobile-close" id="mobile-close" aria-label="Close menu">&times;</button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="{{ url_for('home') }}#collection">Auctions</a>
+            <a href="{{ url_for('home') }}#how-it-works">How It Works</a>
+            <a href="#">Sell</a>
+            <a href="#">About Us</a>
+        </div>
+        <div class="mobile-menu-auth">
+            {% if current_user.is_authenticated %}
+                <div class="mobile-user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ current_user.display_name }}</span>
+                </div>
+                <a href="{{ url_for('buyer_dashboard') }}"><i class="fas fa-th-large"></i> Dashboard</a>
+                {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-cog"></i> Admin Panel</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="mobile-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="mobile-signin"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+                <a href="{{ url_for('register') }}"><i class="fas fa-user-plus"></i> Create Account</a>
+            {% endif %}
+        </div>
+    </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -104,6 +138,34 @@
     })();
     </script>
     {% endif %}
+
+    <!-- Mobile menu toggle -->
+    <script>
+    (function() {
+        const btn = document.getElementById('hamburger');
+        const menu = document.getElementById('mobile-menu');
+        const overlay = document.getElementById('mobile-overlay');
+        const close = document.getElementById('mobile-close');
+
+        function openMenu() {
+            menu.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMenu() {
+            menu.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        if (btn) btn.addEventListener('click', openMenu);
+        if (close) close.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // Close on link click
+        menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    })();
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

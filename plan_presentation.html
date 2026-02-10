@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PantiesFan.com — Business Plan 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#0f0f13;--surface:#18181f;--card:#1e1e28;--border:#2a2a3a;--accent:#8b5cf6;--accent2:#a78bfa;--accent3:#c4b5fd;--text:#e8e8ed;--muted:#8888a0;--success:#34d399;--warn:#fbbf24;--danger:#f87171;--blue:#60a5fa;--radius:14px;--shadow:0 4px 24px rgba(0,0,0,.4);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;}
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:48px 40px 20px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 40%,rgba(139,92,246,.15),transparent 50%),radial-gradient(circle at 70% 60%,rgba(96,165,250,.1),transparent 50%);animation:pulse 8s ease-in-out infinite alternate;}
+@keyframes pulse{0%{transform:scale(1) rotate(0deg);}100%{transform:scale(1.05) rotate(2deg);}}
+.header h1{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;position:relative;letter-spacing:-.5px;}
+.header p{color:var(--muted);margin-top:8px;font-size:1rem;position:relative;}
+.controls{display:flex;justify-content:center;align-items:center;gap:12px;padding:16px 24px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.tab-btn{padding:8px 20px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:99px;cursor:pointer;font-size:.82rem;font-weight:500;transition:all .25s;font-family:inherit;}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent2);}
+.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 20px rgba(139,92,246,.3);}
+.print-btn{padding:8px 20px;border:none;background:linear-gradient(135deg,var(--accent),#6d28d9);color:#fff;border-radius:99px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:inherit;transition:all .25s;margin-left:8px;}
+.print-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(139,92,246,.4);}
+.content{max-width:960px;margin:0 auto;padding:32px 24px 80px;}
+.tab-content{display:none;animation:fadeIn .4s ease;}
+.tab-content.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;transition:border-color .3s;}
+.section:hover{border-color:rgba(139,92,246,.3);}
+h2{font-size:1.5rem;font-weight:700;margin-bottom:16px;color:var(--accent3);display:flex;align-items:center;gap:10px;}
+h3{font-size:1.15rem;font-weight:600;margin:20px 0 10px;color:var(--blue);}
+h4{font-size:1rem;font-weight:600;margin:14px 0 8px;color:var(--accent2);}
+p,li{font-size:.92rem;color:var(--text);margin-bottom:8px;}
+ul,ol{padding-left:20px;}
+li{margin-bottom:4px;}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.75rem;font-weight:600;}
+.badge-p0{background:rgba(248,113,113,.15);color:var(--danger);}
+.badge-p1{background:rgba(251,191,36,.15);color:var(--warn);}
+.badge-go{background:rgba(52,211,153,.15);color:var(--success);}
+pre{background:#13131a;border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.6;color:var(--muted);margin:12px 0;white-space:pre-wrap;word-wrap:break-word;}
+code{font-family:'JetBrains Mono',monospace;font-size:.82rem;background:rgba(139,92,246,.1);padding:1px 6px;border-radius:4px;color:var(--accent2);}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem;}
+th{background:rgba(139,92,246,.12);color:var(--accent3);padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);font-weight:600;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);}
+tr:hover td{background:rgba(139,92,246,.04);}
+.highlight{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(96,165,250,.06));border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:16px;margin:12px 0;}
+.emoji{font-size:1.2rem;}
+.phase-tag{display:inline-block;padding:3px 12px;border-radius:99px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-right:6px;}
+.pt0{background:rgba(251,191,36,.15);color:var(--warn);}
+.pt1{background:rgba(52,211,153,.15);color:var(--success);}
+.pt2{background:rgba(96,165,250,.15);color:var(--blue);}
+.pt3{background:rgba(139,92,246,.15);color:var(--accent2);}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0;}
+.kpi{background:rgba(139,92,246,.06);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.kpi .val{font-size:1.6rem;font-weight:800;color:var(--accent3);}
+.kpi .lbl{font-size:.75rem;color:var(--muted);margin-top:4px;}
+.warn-box{background:rgba(251,191,36,.08);border-left:3px solid var(--warn);padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.88rem;}
+.danger-box{background:rgba(248,113,113,.08);border-left:3px solid var(--danger);padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.88rem;}
+.success-box{background:rgba(52,211,153,.08);border-left:3px solid var(--success);padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.88rem;}
+
+/* Print styles */
+@media print{
+  @page{size:A4;margin:18mm 15mm;}
+  body{background:#fff!important;color:#111!important;font-size:10pt!important;line-height:1.5!important;}
+  .header{background:#fff!important;padding:20px 0 10px!important;border-bottom:2px solid #8b5cf6;}
+  .header::before{display:none!important;}
+  .header h1{font-size:20pt!important;-webkit-text-fill-color:#1a1a2e!important;color:#1a1a2e!important;}
+  .header p{color:#666!important;}
+  .controls{display:none!important;}
+  .content{max-width:100%!important;padding:10px 0!important;}
+  .tab-content{display:block!important;page-break-before:always;}
+  .tab-content:first-of-type{page-break-before:avoid;}
+  .section{background:#fff!important;border:1px solid #ddd!important;padding:14px!important;margin-bottom:12px!important;page-break-inside:avoid;box-shadow:none!important;}
+  h2{color:#4c1d95!important;font-size:14pt!important;page-break-after:avoid;}
+  h3{color:#1e40af!important;font-size:11pt!important;page-break-after:avoid;}
+  pre{background:#f5f5f5!important;color:#333!important;border:1px solid #ddd!important;font-size:8pt!important;page-break-inside:avoid;}
+  table{font-size:8pt!important;}
+  th{background:#f0e8ff!important;color:#4c1d95!important;}
+  td{border-bottom:1px solid #eee!important;color:#333!important;}
+  .kpi{border:1px solid #ddd!important;background:#faf8ff!important;}
+  .kpi .val{color:#4c1d95!important;}
+  .highlight{background:#faf8ff!important;border-color:#ddd!important;}
+  .warn-box,.danger-box,.success-box{background:#fff!important;}
+  p,li{color:#222!important;}
+  code{background:#f0e8ff!important;color:#4c1d95!important;}
+  .badge{border:1px solid #ccc!important;}
+  a{color:#4c1d95!important;text-decoration:none!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>PantiesFan.com — Business Plan</h1>
+  <p>Luxury Auction Marketplace • 18-Month Growth Strategy • Bangkok → Global</p>
+</div>
+
+<div class="controls">
+  <button class="tab-btn active" data-tab="tab0" onclick="switchTab('tab0')">Vision</button>
+<button class="tab-btn" data-tab="tab1" onclick="switchTab('tab1')">Roadmap</button>
+<button class="tab-btn" data-tab="tab2" onclick="switchTab('tab2')">Architecture</button>
+<button class="tab-btn" data-tab="tab3" onclick="switchTab('tab3')">Workflows</button>
+<button class="tab-btn" data-tab="tab4" onclick="switchTab('tab4')">Operations</button>
+<button class="tab-btn" data-tab="tab5" onclick="switchTab('tab5')">Diagrams</button>
+<button class="tab-btn" data-tab="tab6" onclick="switchTab('tab6')">Financials</button>
+<button class="tab-btn" data-tab="tab7" onclick="switchTab('tab7')">Execution</button>
+<button class="tab-btn" data-tab="tab8" onclick="switchTab('tab8')">Next Actions</button>
+
+  <button class="print-btn" onclick="printPDF()">🖨️ Print PDF</button>
+</div>
+
+<div class="content">
+  <div id="tab0" class="tab-content active">
+<div class="section"><h2><span class="emoji">🎯</span> Context</h2><p><strong>Why this plan exists:</strong> Two founders (Antonin + Seb) in Bangkok want to build a luxury auction marketplace for worn intimate apparel, starting as an OnlyFans add-on and scaling to a full creator platform.</p><p><strong>What exists today:</strong> Working Flask app with luxury landing page, fake bidding API, 4 seed auctions in SQLite, production deployment via Cloudflare Tunnel + Gunicorn. <em>Missing:</em> authentication, real timers, payments, seller tools, moderation, any revenue path.</p><p><strong>Your answers incorporated:</strong> International target market (US/EU/Japan), 10-30 Bangkok muses available in 30 days, no demand validation yet, open to revenue split proposals, 18-month timeline to $100K profit.</p></div><div class="section"><h2><span class="emoji">🏆</span> Value Proposition Per Phase</h2><table><thead><tr><th>Phase</th><th>Timeline</th><th>Value Prop</th></tr></thead><tbody><tr><td><span class="phase-tag pt0">0 — Validate</span></td><td>Weeks 1-4</td><td>Prove buyers exist. 5 test sales, no new code.</td></tr><tr><td><span class="phase-tag pt1">1 — Concierge MVP</span></td><td>Months 1-3</td><td>&quot;Bid on authentic worn items from verified Bangkok muses. Hand-curated, vacuum-sealed, shipped worldwide.&quot; Founders ARE the platform.</td></tr><tr><td><span class="phase-tag pt2">2 — Platformization</span></td><td>Months 4-9</td><td>&quot;The premium marketplace where verified creators sell directly to collectors.&quot; Muses self-list with moderation.</td></tr><tr><td><span class="phase-tag pt3">3 — Full Platform</span></td><td>Months 10-18</td><td>&quot;Follow your favorite muses, subscribe for exclusive content, bid on one-of-a-kind items.&quot; Content + merch + subscriptions.</td></tr></tbody></table></div><div class="section"><h2><span class="emoji">⚔️</span> Competitive Positioning</h2><table><thead><tr><th>Platform</th><th>Price Control</th><th>Trust / Curation</th></tr></thead><tbody><tr><td><strong>PantiesFan.com</strong></td><td>Auction-first</td><td>HIGH (curated, luxury brand)</td></tr><tr><td><strong>Sofia Gray</strong></td><td>Fixed price</td><td>MEDIUM (subscription model)</td></tr><tr><td><strong>Snifffr</strong></td><td>Fixed price</td><td>LOW (no payment touch)</td></tr><tr><td><strong>AllThingsWorn</strong></td><td>Fixed price</td><td>MEDIUM (commission-based)</td></tr><tr><td><strong>OnlyFans</strong></td><td>N/A (content only)</td><td>HIGH (for digital content)</td></tr></tbody></table><h3>Why PantiesFan Wins</h3><ul><li><strong>Auction mechanic</strong> — no major competitor uses auctions. Creates urgency, lets market set prices.</li><li><strong>Bangkok muse supply</strong> — geographic concentration = controlled logistics, unique "exotic" positioning.</li><li><strong>Luxury branding</strong> — existing site design is significantly more polished than all competitors.</li><li><strong>Physical + digital combo (Phase 3)</strong> — no competitor bridges worn items AND creator content.</li></ul></div><div class="section"><h2><span class="emoji">💰</span> Revenue Model</h2><table><thead><tr><th>Stream</th><th>Phase</th><th>Mechanism</th></tr></thead><tbody><tr><td>Auction commission</td><td>1+</td><td>30% of net sale (after shipping/processing)</td></tr><tr><td>Listing fees</td><td>2+</td><td>Free first 3/month, then $5/listing</td></tr><tr><td>Buyer subscriptions</td><td>3</td><td>$9.99-29.99/month for premium access</td></tr><tr><td>Content commission</td><td>3</td><td>20% of muse content sales</td></tr></tbody></table><div class="highlight"><strong>Path to $1M+ GMV:</strong> 50 active muses × 8 auctions/month × $250 avg = $100K/month GMV. At 30% commission = $30K/month platform revenue. Achievable by month 12-15.</div></div>
+</div>
+<div id="tab1" class="tab-content">
+<div class="section"><h2><span class="emoji">🧪</span> Phase 0: Validation Sprint (Weeks 1-4)</h2><p><strong>Goal:</strong> Prove buyers exist and will pay. <strong>Budget:</strong> ~$600.</p><table><thead><tr><th>Week</th><th>Action</th><th>Cost</th></tr></thead><tbody><tr><td>1</td><td>Consult Thai attorney. Apply to CCBill (1-3 week approval). Set up NOWPayments. Collect 5 items from 3 muses. Photograph all items.</td><td>$200</td></tr><tr><td>2</td><td>List 3 items on Sofia Gray. List 2 on Reddit. Accept crypto/CashApp. Soft-launch pantiesfan.com with "Contact to Purchase" flow.</td><td>$20</td></tr><tr><td>3</td><td>Measure: views, inquiries, conversions, avg price, buyer geography, payment preference, shipping willingness. Ship sold items via DHL.</td><td>~$350</td></tr><tr><td>4</td><td>Decision gate (GO/KILL signals below)</td><td>—</td></tr></tbody></table><div class="success-box"><strong>GO signals (need 3+):</strong> 3+ sales in 2 weeks, repeat inquiries, avg price >$80, buyers accept $70+ shipping, organic discovery, buyers from multiple target markets.</div><div class="danger-box"><strong>KILL signals:</strong> Zero interest after 2 weeks across 3+ channels, legal counsel says criminal liability, all payment processors reject applications.</div></div><div class="section"><h2><span class="emoji">🚀</span> Phase 1: Concierge MVP (Months 1-3)</h2><h3><span class="badge badge-p0">P0 — Must Have</span></h3><h4>📌 User Authentication</h4><p>Email/password (Flask-Login), age gate (DOB + 18+ checkbox), email verification, password reset, session management</p><h4>📌 Real Auction Engine</h4><p>UTC timestamp-based end times, client-side JS countdown, states: DRAFT → LIVE → ENDED → PAID → SHIPPED → COMPLETED, sniper protection (bid in last 5 min extends by 2 min), min bid increment: $5</p><h4>📌 Proper Bid System</h4><p>Authenticated bids only, specific bid amounts, validation (exceed current + increment), bid history table, outbid email notification</p><h4>📌 Admin Dashboard</h4><p>Password-protected, create auctions (multi-upload), manage: pause/extend/cancel, view bids/payment/shipping status</p><h4>📌 Winner Payment Flow</h4><p>Auction ends → winner email with unique payment link, CCBill + NOWPayments, webhook confirmation, 48h payment window</p><h4>📌 Order Tracking</h4><p>Admin enters DHL tracking number, buyer dashboard: Paid → Preparing → Shipped → Delivered</p><h3><span class="badge badge-p1">P1 — Should Have</span></h3><h4>Muse Profile Pages</h4><p>Photo, bio, stats (items sold, avg price). List of active + past auctions. Admin-created, not self-service.</p><h4>Buyer Dashboard</h4><p>Active bids, won auctions, order history, notification preferences.</p><div class="warn-box"><strong>OUT OF SCOPE Phase 1:</strong> Muse self-service, content/subscriptions, WebSocket real-time bidding, mobile app, multi-language, automated shipping labels, reviews/ratings.</div></div><div class="section"><h2><span class="emoji">⚡</span> Phase 2: Platformization (Months 4-9)</h2><ul><li><strong>Muse Self-Service Dashboard</strong> — Registration with ID verification, create listings, earnings dashboard, payout requests</li><li><strong>Moderation Queue</strong> — All listings require admin approval. AI-assisted image screening.</li><li><strong>Review & Rating System</strong> — Buyers rate muses (1-5 stars + text). Trust score on profile.</li><li><strong>Payout Automation</strong> — Weekly payouts via PromptPay or Wise. Commission auto-deducted.</li><li><strong>Shipping Calculator</strong> — Destination-based cost at checkout. DHL API integration.</li><li><strong>PostgreSQL Migration</strong> — SQLite → managed PostgreSQL. Add Redis + Celery.</li></ul></div><div class="section"><h2><span class="emoji">👑</span> Phase 3: Full Platform (Months 10-18)</h2><ul><li><strong>Content Subscriptions</strong> — Muses post photos/videos behind paywall. Monthly tiers ($9.99/$19.99/$29.99). Platform takes 20%.</li><li><strong>Custom Request System</strong> — Buyers request specific items/wear patterns. Muse quotes price. Escrow payment.</li><li><strong>Free/Paid Buyer Tiers</strong> — Free: browse. Basic ($9.99/mo): bid + message. Premium ($29.99/mo): early access + content.</li><li><strong>In-Platform Messaging</strong> — Moderated buyer-muse communication. No external contact info exchange.</li><li><strong>Japanese Language Support</strong> — High-value market for this niche.</li><li><strong>Affiliate/Referral System</strong> — Muse-to-muse + buyer referral bonuses.</li></ul></div>
+</div>
+<div id="tab2" class="tab-content">
+<div class="section"><h2><span class="emoji">🏗️</span> Platform Architecture</h2><pre>                     INTERNET / USERS
+                [Buyers]  [Muses]  [Admins]
+                          |
+                +--------------------+
+                |    CLOUDFLARE      |
+                | CDN + Tunnel + SSL |
+                | DDoS protection    |
+                +--------------------+
+                          |
+          Phase 1: direct    Phase 2+: add Nginx
+                          |
+                +--------------------+
+                |  GUNICORN (4 wkrs) |
+                +--------------------+
+                          |
+        +------------------------------------------+
+        |           FLASK APPLICATION              |
+        |                                          |
+        |  GET  /                  Landing + Grid   |
+        |  GET  /auction/&lt;id&gt;      Auction Detail   |
+        |  POST /api/bid/&lt;id&gt;      Place Bid (JSON) |
+        |  GET  /api/auctions      List (JSON)      |
+        |  *    /auth/*            Login/Register    |
+        |  *    /dashboard/*       Buyer/Muse/Admin  |
+        |  POST /api/payment/cb    Payment Webhook   |
+        |  GET  /pay/&lt;token&gt;       Payment Page      |
+        +------------------------------------------+
+                |           |            |
+      +---------+    +------+----+   +---+---------+
+      | DATABASE |    | FILES    |   | EXTERNAL    |
+      | Ph1:     |    | Ph1:     |   | CCBill      |
+      |  SQLite  |    |  Local   |   | NOWPayments |
+      | Ph2:     |    | Ph2:     |   | SendGrid    |
+      |  Postgres|    |  Spaces  |   | DHL API     |
+      +----------+    +----------+   +-------------+</pre></div><div class="section"><h2><span class="emoji">🗄️</span> Database Schema (Phase 1)</h2><pre>users (id, email, password_hash, display_name, role[buyer/muse/admin],
+       age_verified, dob, created_at, last_login, is_active)
+
+muse_profiles (id, user_id FK, display_name, bio, avatar_url,
+              verification[pending/verified/rejected], total_sales, avg_rating)
+
+auctions (id, muse_id FK, title, description, category, wear_duration,
+         starting_bid, current_bid, current_bidder FK, bid_count,
+         status[draft/live/ended/paid/shipped/completed/cancelled],
+         starts_at, ends_at, original_end, created_by FK)
+
+auction_images (id, auction_id FK, image_url, sort_order, is_primary)
+
+bids (id, auction_id FK, user_id FK, amount, placed_at, is_winning, ip_address)
+
+payments (id, auction_id FK, buyer_id FK, amount, processor[ccbill/nowpayments],
+         processor_txn, status[pending/completed/failed/refunded],
+         payment_url, payment_token UNIQUE, created_at, completed_at)
+
+shipments (id, payment_id FK, tracking_number, carrier, destination,
+          status[preparing/shipped/in_transit/delivered], shipped_at, shipping_cost)
+
+payouts (id, muse_id FK, amount, method[thai_bank/wise/crypto],
+        status[pending/processing/completed], reference, processed_at)</pre><p>Phase 2 adds: <code>reviews</code>, <code>moderation_queue</code>, <code>notifications</code></p><p>Phase 3 adds: <code>subscriptions</code>, <code>content</code>, <code>custom_requests</code>, <code>messages</code></p></div><div class="section"><h2><span class="emoji">💳</span> Payment Integration</h2><pre>AUCTION ENDS → Winner email with unique /pay/&lt;token&gt; link
+                          |
+            +-------------+-------------+
+            |                           |
+     [Pay with Card]            [Pay with Crypto]
+     CCBill hosted page         NOWPayments widget
+     (10.8-14.5% fee)          (0.5-1% fee)
+            |                           |
+            +-------------+-------------+
+                          |
+                  POST /api/payment/callback
+                  (webhook from processor)
+                          |
+                  Update DB → Notify buyer
+                  → Notify admin → Queue shipment</pre><h3>Processor Stack</h3><ul><li><strong>Primary — CCBill:</strong> Industry standard for adult-adjacent. 10.8-14.5% fees. Apply NOW (1-3 week approval).</li><li><strong>Secondary — NOWPayments:</strong> Crypto at 0.5-1%. Privacy-conscious buyers. 300+ coins. 30-minute setup.</li><li><strong>Backup — Segpay:</strong> If CCBill rejects, Segpay onboards in 24-72 hours at 4-15%.</li></ul><div class="danger-box"><strong>DO NOT USE:</strong> Stripe (explicit ban on fetish services), PayPal (will freeze funds), Square (same restrictions).</div></div><div class="section"><h2><span class="emoji">⚙️</span> Auction Engine Design</h2><pre>Store ends_at as UTC timestamp
+Client JS: countdown = ends_at - server_now (synced)
+Bid validation: all server-side
+  - auction.status must be &#x27;live&#x27;
+  - now &lt; auction.ends_at
+  - amount &gt;= current_bid + $5
+  - bidder != muse
+Sniper protection:
+  - if (ends_at - now) &lt; 300 seconds → ends_at += 120 seconds
+Auction lifecycle:
+  DRAFT → LIVE → ENDED → PAYMENT_PENDING → PAID → SHIPPED → COMPLETED
+                   ↓                         ↓
+                 NO_BIDS (relist)          DISPUTED</pre></div><div class="section"><h2><span class="emoji">📈</span> Infrastructure Scaling</h2><table><thead><tr><th>Phase</th><th>Stack</th><th>Monthly Cost</th></tr></thead><tbody><tr><td>1</td><td>Existing server + Gunicorn + SQLite + Cloudflare free</td><td>~$20</td></tr><tr><td>2</td><td>DigitalOcean $24 droplet + managed Postgres $15 + Redis $10 + DO Spaces $5</td><td>~$55-80</td></tr><tr><td>3</td><td>DO App Platform or AWS, Docker containers, managed DB, CDN</td><td>~$200-500</td></tr></tbody></table></div><div class="section"><h2><span class="emoji">🤖</span> AI Leverage Points</h2><ol><li><strong>Phase 1 — Listing copy:</strong> Claude generates auction titles/descriptions. Saves hours.</li><li><strong>Phase 2 — Content moderation:</strong> LLM reviews listing text. Image classifier screens uploads.</li><li><strong>Phase 2 — Customer support:</strong> AI chatbot for FAQ. Human escalation for disputes.</li><li><strong>Phase 3 — Pricing intelligence:</strong> Analyze completed auction data → recommend starting prices.</li><li><strong>Phase 3 — Translation:</strong> Auto-translate listings to Japanese.</li></ol></div>
+</div>
+<div id="tab3" class="tab-content">
+<div class="section"><h2><span class="emoji">🛒</span> Buyer Journey (Click-by-Click)</h2><pre>1. DISCOVER    → Arrives via Reddit/Twitter/Google → sees luxury landing page
+2. BROWSE      → Scrolls to &quot;Live Auctions&quot; → sees cards with real countdowns
+3. REGISTER    → Clicks &quot;Sign In&quot; → email + password + DOB + age confirm
+                 → verification email → clicks link → logged in
+4. SELECT      → Clicks auction card → detail page: gallery, muse link,
+                 description, bid history, countdown, bid form
+5. BID         → Enters amount ≥ current + $5 → &quot;Your bid of $175 placed!&quot;
+                 → If outbid later: email notification with link back
+6. WIN         → Auction ends → email: &quot;You won! Pay within 48h: [link]&quot;
+7. PAY         → Payment page → [Card via CCBill] or [Crypto via NOWPayments]
+                 → CCBill hosted checkout → redirect to /order/confirmed
+8. TRACK       → Dashboard: Paid → Preparing → Shipped (DHL #) → Delivered
+9. RECEIVE     → Plain brown box, &quot;BKK Trading Co&quot; sender → branded interior</pre></div><div class="section"><h2><span class="emoji">💎</span> Muse Journey — Phase 1 (Passive)</h2><pre>1. RECRUIT     → Antonin contacts muse in person (Bangkok)
+2. AGREE       → Revenue split terms (70% muse / 30% platform)
+3. PROVIDE     → Muse gives items + selfie for verification
+4. FOUNDERS    → Photograph → write listing → create auction → monitor →
+                 process payment → package (vacuum seal) → ship DHL →
+                 transfer muse&#x27;s 70% via PromptPay/bank</pre></div><div class="section"><h2><span class="emoji">✨</span> Muse Journey — Phase 2 (Self-Service)</h2><pre>1. REGISTER    → pantiesfan.com/sell → upload ID + selfie + handwritten note
+2. VERIFY      → Admin reviews within 24h → &quot;Verified Seller&quot; badge
+3. LIST        → Upload 3-5 photos → title, description, wear duration →
+                 set starting bid + duration → submit → moderation queue
+4. APPROVED    → Listing goes live → muse sees real-time bid activity
+5. SOLD        → Notification: &quot;Sold for $210! Drop item at shipping point&quot;
+6. SHIP        → Drop at Bangkok location (founders package/ship)
+7. PAID        → After buyer confirms (or 7-day auto), earnings credited
+                 → Withdraw to Thai bank / Wise / crypto</pre></div><div class="section"><h2><span class="emoji">📋</span> Admin Daily Routine — Phase 1</h2><pre>MORNING (Founder A — Content, ~2h):
+  □ Check ended auctions needing payment follow-up
+  □ Meet 1-2 muses, collect items
+  □ Photograph (phone + lightbox)
+  □ AI-draft listing descriptions
+  □ Create 2-4 new auctions in admin panel
+
+AFTERNOON (Founder B — Ops, ~2h):
+  □ Check CCBill dashboard for payment confirmations
+  □ Package sold items (vacuum seal + branded box)
+  □ DHL pickup/drop-off
+  □ Update tracking in admin dashboard
+  □ Respond to buyer emails
+  □ Post 1 social media promotion
+
+WEEKLY:
+  □ Reconcile payments (CCBill pays out weekly)
+  □ Transfer muse earnings via PromptPay
+  □ Review analytics (traffic, conversion, avg price)
+  □ Recruit 1-2 new muses if pipeline thin</pre></div>
+</div>
+<div id="tab4" class="tab-content">
+<div class="section"><h2><span class="emoji">👥</span> HR Needs Per Phase</h2><pre>PHASE 1 (2 founders, $0):
+  Founder A: Product + marketing + photography + listings
+  Founder B: Operations + shipping + payments + muse relations
+  AI: Feature dev + listing copy + support drafts
+
+PHASE 2 (add 1-2 people, +$700-1,100/mo):
+  + Part-time Shipping Assistant (Bangkok): $400-600/mo
+  + Part-time Content Moderator (remote): $300-500/mo
+
+PHASE 3 (add 2-3 more, +$1,400-6,000/mo):
+  + Full-time Operations Manager (Bangkok): $800-1,200/mo
+  + Full-time Community Manager / Recruiter: $600-800/mo
+  + Contract Developer (burst): $2,000-4,000/mo when active</pre></div><div class="section"><h2><span class="emoji">📦</span> Logistics & Packaging</h2><pre>Item received → QC check → Vacuum seal ($0.50) → Branded tissue + sticker ($1.00)
+→ Thank-you card ($0.50) → Plain brown 25cm box ($1.00) → &quot;BKK Trading Co&quot; label
+→ Customs form: &quot;Women&#x27;s cotton underwear&quot; HS 6108.21 → DHL pickup
+
+TOTAL PACKAGING COST: ~$3.00/item</pre></div><div class="section"><h2><span class="emoji">🚚</span> Shipping Research (Bangkok Origin)</h2><table><thead><tr><th>Destination</th><th>Carrier</th><th>Cost (USD)</th><th>Days</th><th>Notes</th></tr></thead><tbody><tr><td>USA</td><td>DHL Express</td><td>$70-97</td><td>2-3</td><td>Thailand Post SUSPENDED to US since Aug 2025</td></tr><tr><td>USA</td><td>Thai Nexus</td><td>~$70-80</td><td>4-7</td><td>DDP included, continued during suspension</td></tr><tr><td>Europe</td><td>Thai Post EMS</td><td>$47-61</td><td>4-9</td><td>Budget option</td></tr><tr><td>Europe</td><td>DHL Express</td><td>$61-89</td><td>3-4</td><td>Premium option</td></tr><tr><td>Japan</td><td>Thai Post EMS</td><td>$47-61</td><td>3-5</td><td>Best value market</td></tr><tr><td>Japan</td><td>DHL Express</td><td>$50-70</td><td>1-2</td><td>Fast + cheapest DHL route</td></tr><tr><td>Australia</td><td>DHL Express</td><td>$50-70</td><td>2-4</td><td>Generous $1,000 AUD duty-free threshold</td></tr></tbody></table><div class="warn-box"><strong>⚠️ Critical: US shipping.</strong> Thailand Post suspended all parcel services to the USA (Aug 2025). Must use DHL or Thai Nexus Express. All US shipments now subject to 19% tariff. Use DDP so buyers don't face surprise charges.</div><div class="highlight"><strong>Recommendation:</strong> Buyer pays shipping separately on top of winning bid. Display at checkout. This makes all price points viable.</div></div><div class="section"><h2><span class="emoji">⚖️</span> Risk, Compliance & Trust</h2><div class="danger-box"><strong>🔴 Legal (HIGH PRIORITY — Action Required Before Launch):</strong><ul><li>Thai Computer Crime Act and obscenity laws carry criminal penalties</li><li><strong>Immediate:</strong> Consult Thai attorney specializing in digital/internet commerce</li><li><strong>Recommended:</strong> Form entity in jurisdiction with clearer adult-commerce frameworks (UK, Netherlands, or Delaware LLC)</li><li>Frame platform as "worn clothing marketplace" — not adult content</li></ul></div><h3>Trust Mechanisms</h3><ul><li>Muse verification (ID + selfie → "Verified" badge)</li><li>Wear-proof system (pre-wear + post-wear timestamped photos)</li><li>Buyer reviews post-purchase</li><li>Escrow: funds to muse only after buyer confirms or 7-day auto-release</li></ul></div>
+</div>
+<div id="tab5" class="tab-content">
+<div class="section"><h2><span class="emoji">🏢</span> Org Chart Evolution</h2><pre>PHASE 1:                PHASE 2:                   PHASE 3:
++------------+          +------------+              +------------+
+| Antonin    |          | Founders   |              | Founders   |
+| (Biz/Mktg) |          | (Strategy) |              | (CEO/CTO)  |
++------------+          +------+-----+              +------+-----+
++------------+            +----|----+                  +----|----+-----+--------+
+| Seb        |            |    |    |                  |    |         |        |
+| (Tech/Ops) |          Ship  Mod  AI              Ops Mgr  Community  Contract
++------------+          Asst  (PT)                 (FT)    Mgr (FT)    Dev
++------------+          (PT)                         |
+| AI Tools   |                                    Ship Asst(s)
+| (Claude)   |                                    + Moderator
++------------+</pre></div><div class="section"><h2><span class="emoji">📅</span> Platform Evolution Timeline</h2><pre>MONTH: 0    1    2    3    4    5    6    7    8    9    10   11   12   ...  18
+       |    |    |    |    |    |    |    |    |    |    |    |    |         |
+       |-P0-|--------Phase 1---------|--------Phase 2---------|---Phase 3---|
+       Valid  Auth+Timer  Admin  Pay   Muse    Reviews  PG    Content  Full
+       ate    +Bids       Panel  Flow  Self-   +Ship    Migr  Subs     Plat
+              (wk1-2)     (wk3-4)(wk5-8)Svc    Calc    ation  +Tiers   form</pre></div><div class="section"><h2><span class="emoji">🔄</span> Transaction Flow</h2><pre>MUSE            FOUNDERS/PLATFORM         BUYER              EXTERNAL
+ |                    |                     |                    |
+ |--[gives item]----&gt;|                     |                    |
+ |                    |--[photo+list]       |                    |
+ |                    |--[go live]          |                    |
+ |                    |                     |--[browse+bid]----&gt;|
+ |                    |&lt;---[bid placed]----|                    |
+ |                    |---[update price]--&gt;|                    |
+ |                    |        ...          |                    |
+ |                    |    (auction ends)   |                    |
+ |                    |---[payment link]--&gt;|                    |
+ |                    |                     |---[pay]---------&gt;| CCBill
+ |                    |&lt;------[webhook: paid]------------------|
+ |                    |--[package+ship]------|---------------&gt;| DHL
+ |                    |---[tracking #]----&gt;|                    |
+ |                    |            [receives package]           |
+ |&lt;--[payout 70%]----|                     |                    |</pre></div>
+</div>
+<div id="tab6" class="tab-content">
+<div class="section"><h2><span class="emoji">💵</span> Revenue Split: 70% Muse / 30% Platform</h2><p>Industry benchmarks: OnlyFans 80/20, Fansly 80/20, AllThingsWorn 80-85/15-20. <strong>BUT</strong> those platforms don't handle photography, listing, packaging, or shipping. 30% is justified because founders do all the work in Phase 1. Move to 75/25 in Phase 2 when muses self-serve.</p></div><div class="section"><h2><span class="emoji">📊</span> Cost Breakdown Per Transaction</h2><pre>                        $65 item    $150 item   $500 item   $1,000 item
+─────────────────────────────────────────────────────────────────────────
+WINNING BID:            $65.00      $150.00     $500.00     $1,000.00
++ Shipping to buyer:    +$75.00     +$75.00     +$75.00     +$75.00
+TOTAL CHARGED:          $140.00     $225.00     $575.00     $1,075.00
+
+DEDUCTIONS:
+CCBill 14.5% (on total) -$20.30     -$32.63     -$83.38     -$155.88
+Actual shipping          -$70.00     -$70.00     -$70.00     -$70.00
+Packaging               -$3.00      -$3.00      -$3.00      -$3.00
+─────────────────────────────────────────────────────────────────────────
+NET PROFIT POOL:        $46.70      $119.38     $418.63     $846.13
+
+70% → Muse:             $32.69      $83.56      $293.04     $592.29
+30% → Platform:         $14.01      $35.81      $125.59     $253.84
+─────────────────────────────────────────────────────────────────────────</pre><div class="highlight"><strong>Crypto savings:</strong> $150 item via crypto → Platform gets $44.93 (vs $35.81 with CCBill). <strong>~$30 more per sale!</strong> Incentivize crypto with "Pay with crypto, save 5%".</div></div><div class="section"><h2><span class="emoji">💸</span> Monthly Costs & Break-Even</h2><pre>PHASE 1 FIXED COSTS:                    ~$356/month
+  Infrastructure:          $20
+  CCBill annual (prorated): $42
+  Domain (prorated):       $2
+  Email (SendGrid free):   $0
+  Packaging inventory:     $150
+  Misc (transport, etc.):  $100
+  Legal retainer:          $42</pre><div class="kpi-grid"><div class="kpi"><div class="val">10</div><div class="lbl">sales/mo break-even<br>@ $150 avg</div></div><div class="kpi"><div class="val">6</div><div class="lbl">sales/mo break-even<br>@ $250 avg</div></div><div class="kpi"><div class="val">$356</div><div class="lbl">monthly fixed costs<br>Phase 1</div></div></div></div><div class="section"><h2><span class="emoji">🚀</span> Path to $100K Profit in 18 Months</h2><table><thead><tr><th>Mo</th><th>Sales</th><th>Avg$</th><th>GMV</th><th>Platform$</th><th>Costs</th><th>Profit</th><th>Cumulative</th></tr></thead><tbody><tr style="background:rgba(248,113,113,.05)"><td>1</td><td>5</td><td>$150</td><td>$750</td><td>$179</td><td>$356</td><td>$-177</td><td>$-177</td></tr><tr style="background:rgba(248,113,113,.05)"><td>2</td><td>8</td><td>$150</td><td>$1,200</td><td>$286</td><td>$356</td><td>$-70</td><td>$-247</td></tr><tr style="background:rgba(52,211,153,.08)"><td>3</td><td>12</td><td>$175</td><td>$2,100</td><td>$574</td><td>$356</td><td>+$218</td><td>$-29</td></tr><tr style="background:rgba(52,211,153,.08)"><td>4</td><td>18</td><td>$200</td><td>$3,600</td><td>$1,073</td><td>$700</td><td>+$373</td><td>$344</td></tr><tr style="background:rgba(52,211,153,.08)"><td>5</td><td>25</td><td>$200</td><td>$5,000</td><td>$1,490</td><td>$1,000</td><td>+$490</td><td>$834</td></tr><tr style="background:rgba(52,211,153,.08)"><td>6</td><td>35</td><td>$225</td><td>$7,875</td><td>$2,587</td><td>$1,200</td><td>+$1,387</td><td>$2,221</td></tr><tr style="background:rgba(52,211,153,.08)"><td>7</td><td>45</td><td>$225</td><td>$10,125</td><td>$3,327</td><td>$1,400</td><td>+$1,927</td><td>$4,148</td></tr><tr style="background:rgba(52,211,153,.08)"><td>8</td><td>55</td><td>$250</td><td>$13,750</td><td>$4,931</td><td>$1,500</td><td>+$3,431</td><td>$7,579</td></tr><tr style="background:rgba(52,211,153,.08)"><td>9</td><td>65</td><td>$250</td><td>$16,250</td><td>$5,828</td><td>$1,692</td><td>+$4,136</td><td>$11,715</td></tr><tr style="background:rgba(52,211,153,.08)"><td>10</td><td>80</td><td>$275</td><td>$22,000</td><td>$8,492</td><td>$2,500</td><td>+$5,992</td><td>$17,707</td></tr><tr style="background:rgba(52,211,153,.08)"><td>11</td><td>90</td><td>$275</td><td>$24,750</td><td>$9,553</td><td>$3,000</td><td>+$6,553</td><td>$24,260</td></tr><tr style="background:rgba(52,211,153,.08)"><td>12</td><td>100</td><td>$300</td><td>$30,000</td><td>$12,355</td><td>$3,500</td><td>+$8,855</td><td>$33,115</td></tr><tr style="background:rgba(52,211,153,.08)"><td>13</td><td>110</td><td>$300</td><td>$33,000</td><td>$13,590</td><td>$4,000</td><td>+$9,590</td><td>$42,705</td></tr><tr style="background:rgba(52,211,153,.08)"><td>14</td><td>120</td><td>$325</td><td>$39,000</td><td>$16,822</td><td>$5,000</td><td>+$11,822</td><td>$54,527</td></tr><tr style="background:rgba(52,211,153,.08)"><td>15</td><td>130</td><td>$325</td><td>$42,250</td><td>$18,223</td><td>$6,000</td><td>+$12,223</td><td>$66,750</td></tr><tr style="background:rgba(52,211,153,.08)"><td>16</td><td>140</td><td>$350</td><td>$49,000</td><td>$21,886</td><td>$7,000</td><td>+$14,886</td><td>$81,636</td></tr><tr style="background:rgba(52,211,153,.08)"><td>17</td><td>150</td><td>$350</td><td>$52,500</td><td>$23,449</td><td>$8,000</td><td>+$15,449</td><td>$97,085</td></tr><tr style="background:rgba(52,211,153,.08)"><td>18</td><td>160</td><td>$375</td><td>$60,000</td><td>$27,628</td><td>$8,292</td><td>+$19,336</td><td>$116,421</td></tr></tbody></table><div class="kpi-grid"><div class="kpi"><div class="val">$417K</div><div class="lbl">18mo total GMV</div></div><div class="kpi"><div class="val">$146K</div><div class="lbl">platform revenue</div></div><div class="kpi"><div class="val">$100K+</div><div class="lbl">cumulative profit</div></div></div></div>
+</div>
+<div id="tab7" class="tab-content">
+<div class="section"><h2><span class="emoji">✅</span> What 2 Founders + AI Can Handle</h2><table><thead><tr><th>Phase</th><th>Verdict</th><th>Why</th></tr></thead><tbody><tr><td>0 (Validation)</td><td>✅ Easily</td><td>No code needed. Just sell on existing platforms.</td></tr><tr><td>1 (Months 1-3)</td><td>✅ Yes, but intense</td><td>AI writes 80% of code. 6-8hr days for both founders. &lt;15 sales/mo = manageable ops.</td></tr><tr><td>2 (Months 4-9)</td><td>⚠️ Need 1-2 hires</td><td>30+ items/month = 2+ hours/day packaging. Need shipping assistant ($500/mo).</td></tr><tr><td>3 (Months 10-18)</td><td>❌ Need structure</td><td>100+ sales/month = real logistics operation. Budget $3K/mo for contract dev.</td></tr></tbody></table></div><div class="section"><h2><span class="emoji">🔧</span> What Breaks Without Hiring</h2><table><thead><tr><th>Task</th><th>Breaks at</th><th>Hire</th><th>Cost</th></tr></thead><tbody><tr><td>Packaging/shipping</td><td>30 items/month</td><td>Bangkok shipping assistant</td><td>$500/mo</td></tr><tr><td>Muse recruitment</td><td>30+ muses</td><td>Community manager</td><td>$700/mo</td></tr><tr><td>Content moderation</td><td>50+ listings/week</td><td>Part-time moderator</td><td>$400/mo</td></tr><tr><td>Customer support</td><td>20+ tickets/day</td><td>AI chatbot + escalation</td><td>$0-400/mo</td></tr><tr><td>Feature development</td><td>Phase 3 complexity</td><td>Contract developer</td><td>$3K/mo burst</td></tr></tbody></table></div><div class="section"><h2><span class="emoji">🧑‍💻</span> The CTO Question</h2><p><strong>"Can we do this with AI-assisted dev or do we need a CTO?"</strong></p><ul><li><strong>Phase 1-2:</strong> No CTO needed. Flask auth, CRUD, payment webhooks — well-trodden patterns. Claude Code generates production-quality code. Seb needs to read Python, deploy to Linux, debug basic issues.</li><li><strong>Phase 2 transition:</strong> Budget 2-3 weeks of contract dev for PostgreSQL migration + Celery setup. One-time: ~$4K-6K.</li><li><strong>Phase 3:</strong> Need contract developer for subscription system, messaging, multi-language. Budget $3-5K/month (3-4 months).</li></ul><div class="success-box"><strong>Bottom line:</strong> You do NOT need a full-time CTO. You need a technically competent founder (Seb) + AI tools + ~6-8 weeks of contract developer time across 18 months.</div></div><div class="section"><h2><span class="emoji">🚨</span> Top 5 Failure Points & Mitigation</h2><table><thead><tr><th>#</th><th>Failure</th><th>Probability</th><th>Mitigation</th></tr></thead><tbody><tr><td>1</td><td>No demand — muses ready, no buyers</td><td style="color:var(--danger);font-weight:600">HIGH</td><td>Phase 0 validation. 5 test sales before building anything.</td></tr><tr><td>2</td><td>Payment processor rejection</td><td style="color:var(--warn);font-weight:600">MEDIUM</td><td>Apply CCBill + Segpay simultaneously. NOWPayments crypto as day-1 fallback.</td></tr><tr><td>3</td><td>Thai legal problems</td><td style="color:var(--warn);font-weight:600">MEDIUM</td><td>Consult attorney BEFORE launch. Form UK/Netherlands entity if needed.</td></tr><tr><td>4</td><td>Shipping costs kill margins</td><td style="color:var(--success);font-weight:600">LOW (solved)</td><td>Buyer pays shipping separately. Focus Japan market first.</td></tr><tr><td>5</td><td>Chargebacks</td><td style="color:var(--success);font-weight:600">LOW</td><td>CCBill handles this (it&#x27;s why you pay 14.5%). DHL tracking + delivery signature for $300+ items.</td></tr></tbody></table></div>
+</div>
+<div id="tab8" class="tab-content">
+<div class="section"><h2><span class="emoji">🎯</span> Immediate Next Actions</h2><h3>This Week</h3><ul><li>☐ 1. Consult Thai attorney (digital commerce specialization)</li><li>☐ 2. Apply to CCBill for merchant account (1-3 week approval)</li><li>☐ 3. Set up NOWPayments account (30 min, crypto fallback)</li><li>☐ 4. Have Antonin collect 5 items from 3 muses</li></ul><h3>Next Week</h3><ul><li>☐ 5. Photograph all 5 items</li><li>☐ 6. List 3 on Sofia Gray, 2 on Reddit</li><li>☐ 7. Soft-launch pantiesfan.com with "Contact to Purchase" flow</li></ul><h3>Week 3-4</h3><ul><li>☐ 8. Measure results (see Phase 0 GO/KILL signals)</li><li>☐ 9. If GO: Begin Phase 1 development (auth system first)</li></ul></div><div class="section"><h2><span class="emoji">🛠️</span> Development Order (Phase 1, if GO)</h2><table><thead><tr><th>Week</th><th>Focus</th></tr></thead><tbody><tr><td>1-2</td><td>User auth + real auction timers + proper bid engine</td></tr><tr><td>3-4</td><td>Admin dashboard + image upload</td></tr><tr><td>5-6</td><td>Payment integration (CCBill webhook + NOWPayments)</td></tr><tr><td>7-8</td><td>Winner flow (email → pay → track) + buyer dashboard</td></tr><tr><td>9-12</td><td>Iterate on real user feedback. Fix bugs. Optimize.</td></tr></tbody></table></div><div class="section"><h2><span class="emoji">📁</span> Files to Modify (Phase 1)</h2><table><thead><tr><th>File</th><th>Change</th></tr></thead><tbody><tr><td><code>app.py</code></td><td>Expand from 84 lines to ~500-800 (auth, auction engine, payment webhooks, admin)</td></tr><tr><td><code>templates/index.html</code></td><td>Decompose 917-line monolith into base.html + partials. Extract CSS/JS.</td></tr><tr><td><code>requirements.txt</code></td><td>Add: flask-login, flask-wtf, flask-mail, apscheduler, requests, pillow, python-dotenv</td></tr><tr><td><code>config.yml</code></td><td>No change Phase 1. Add Nginx in Phase 2.</td></tr><tr><td><code>panties_fan.service</code></td><td>Update when background workers added (Phase 2).</td></tr><tr><td><code>[NEW] templates/auth/</code></td><td>Login/register pages</td></tr><tr><td><code>[NEW] templates/dashboard/</code></td><td>Buyer, admin dashboards</td></tr><tr><td><code>[NEW] templates/auction_detail.html</code></td><td>Single auction page with bid form</td></tr><tr><td><code>[NEW] .env</code></td><td>Secret key, CCBill credentials, SendGrid API key, DB config</td></tr></tbody></table></div><div class="section"><h2><span class="emoji">🧪</span> Verification Plan</h2><ul><li>Auth: Register new account → verify email → login → see authenticated nav</li><li>Auction: Admin creates auction with 24h duration → countdown visible → timer counts down in real-time</li><li>Bidding: Logged-in user places bid → amount validates → price updates → second user gets outbid email</li><li>Sniper: Place bid with &lt;5 min remaining → end time extends by 2 min</li><li>Payment: Auction ends → winner gets email with /pay/TOKEN link → CCBill test mode → webhook updates DB → admin sees &quot;Paid&quot;</li><li>Shipping: Admin enters tracking number → buyer dashboard shows &quot;Shipped&quot; with DHL link</li><li>Full flow: End-to-end from browse → bid → win → pay → track, tested with real CCBill sandbox</li></ul></div>
+</div>
+
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector('[data-tab="'+id+'"]').classList.add('active');
+}
+function printPDF() {
+  window.print();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PantiesFan.com | Your Fantasy, Worn for Real</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-dark: #0a0a0a;
+            --primary-wine: #4a0e16;
+            --primary-wine-light: #7b1e2b;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f3e5ab;
+            --text-main: #fdfbf7;
+            --text-muted: #a8a8a8;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            mix-blend-mode: difference;
+        }
+
+        nav.scrolled {
+            padding: 1rem 4rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            mix-blend-mode: normal;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--text-main), var(--accent-gold));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            padding: 0.8rem 2rem;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-gold);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+
+        .cta-button:hover {
+            color: var(--primary-dark);
+        }
+
+        .cta-button:hover::before {
+            left: 0;
+        }
+
+        /* --- Hero Section --- */
+        header.hero {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 110%;
+            /* For parallax */
+            background-image: url('./Static/images/landing.jpeg');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.6);
+            z-index: -1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, var(--primary-dark) 90%);
+            z-index: 0;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            background: linear-gradient(to right, #fff, #d4af37 60%, #fff);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--accent-gold-light);
+            margin-bottom: 3rem;
+            opacity: 0;
+            /* Animated in */
+            transform: translateY(20px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.7;
+        }
+
+        .scroll-mouse {
+            width: 26px;
+            height: 42px;
+            border: 1px solid var(--text-main);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .scroll-dot {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            animation: scroll 2s infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                top: 6px;
+                opacity: 1;
+            }
+
+            100% {
+                top: 24px;
+                opacity: 0;
+            }
+        }
+
+        /* --- Manifesto Section --- */
+        .manifesto {
+            padding: 8rem 2rem;
+            background: var(--primary-dark);
+            text-align: center;
+            position: relative;
+        }
+
+        .manifesto-text {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .manifesto h2 {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .manifesto p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* --- Collection Section --- */
+        .collection {
+            padding: 4rem 4rem 8rem;
+            background: linear-gradient(180deg, var(--primary-dark) 0%, #1a0508 100%);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 4rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--text-main);
+        }
+
+        .section-subtitle {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--accent-gold);
+        }
+
+        .card-img-container {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.05);
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-wine);
+            color: #fff;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff4444;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .card-info {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .price {
+            color: var(--accent-gold);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .bid-btn {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .bid-btn:hover {
+            background: var(--primary-wine);
+        }
+
+        /* --- How It Works --- */
+        .how-it-works {
+            padding: 6rem 2rem;
+            background: var(--primary-dark);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .hiw-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hiw-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            text-align: center;
+        }
+
+        .hiw-step {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border: 1px solid var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 2rem;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            transition: all 0.3s ease;
+        }
+
+        .hiw-step:hover .icon-circle {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .hiw-step h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .hiw-step p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- CTA Section --- */
+        .cta-section {
+            padding: 10rem 2rem;
+            background: linear-gradient(rgba(10, 10, 10, 0.7), rgba(74, 14, 22, 0.5)), url('./Static/images/landing2.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .cta-content {
+            z-index: 2;
+            text-align: center;
+        }
+
+        .cta-content h2 {
+            font-size: 3.5rem;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            color: var(--accent-gold-light);
+            margin-bottom: 3rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 4rem 2rem;
+            background: #000;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-gold);
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            nav {
+                padding: 1.5rem;
+            }
+
+            .collection {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="#" class="logo">PANTIESFAN</a>
+        <div class="nav-links">
+            <a href="#collection">Auctions</a>
+            <a href="#">How It Works</a>
+            <a href="#">Sell</a>
+            <a href="#">About Us</a>
+        </div>
+        <button class="cta-button">Sign In</button>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Panties Fan</h1>
+            <p>Your Fantasy, Worn For Real.</p>
+            <button class="cta-button"
+                onclick="document.getElementById('collection').scrollIntoView({behavior: 'smooth'})">
+                Enter The Gallery
+            </button>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-dot"></div>
+            </div>
+            <span>Scroll to Explore</span>
+        </div>
+    </header>
+
+    <section class="manifesto">
+        <div class="manifesto-text">
+            <h2>The Scent of Desire</h2>
+            <p>
+                Experience the ultimate connection. Authenticity verified. discreetly delivered.
+                Our exclusive marketplace connects admirers with their muses in the most intimate way possible.
+            </p>
+        </div>
+    </section>
+
+    <section id="collection" class="collection">
+        <div class="section-header">
+            <div>
+                <h3 class="section-title">Live Auctions</h3>
+                <span class="section-subtitle">Freshly Listed</span>
+            </div>
+            <a href="#" style="color: var(--accent-gold); font-size: 0.9rem;">View All <i
+                    class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="grid">
+            <!-- Card 1 -->
+            <div class="card">
+                <div class="live-badge">
+                    <div class="live-dot"></div> Live
+                </div>
+                <div class="card-img-container">
+                    <img src="./Static/images/girls (1).jpg" alt="Item Preview" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h4 class="card-title">Silk Lace Nightset (Worn 2 Days)</h4>
+                    <p style="font-size: 0.85rem; color: #888;">Seller: <span style="color: #fff;">Mistress_V</span></p>
+                    <div class="card-meta">
+                        <span><i class="far fa-clock"></i> 2h 15m left</span>
+                        <span class="price">$145.00</span>
+                    </div>
+                    <button class="bid-btn">Place Bid</button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card">
+                <div class="live-badge">
+                    <div class="live-dot"></div> Live
+                </div>
+                <div class="card-img-container">
+                    <img src="./Static/images/girls (2).jpg" alt="Item Preview" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h4 class="card-title">Gym Session Thong (Intense)</h4>
+                    <p style="font-size: 0.85rem; color: #888;">Seller: <span style="color: #fff;">FitGirl_99</span></p>
+                    <div class="card-meta">
+                        <span><i class="far fa-clock"></i> 45m left</span>
+                        <span class="price">$85.00</span>
+                    </div>
+                    <button class="bid-btn">Place Bid</button>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card">
+                <div class="live-badge">
+                    <div class="live-dot"></div> Live
+                </div>
+                <div class="card-img-container">
+                    <img src="./Static/images/girls (3).jpg" alt="Item Preview" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h4 class="card-title">Red Velvet Special Request</h4>
+                    <p style="font-size: 0.85rem; color: #888;">Seller: <span style="color: #fff;">RedRose</span></p>
+                    <div class="card-meta">
+                        <span><i class="far fa-clock"></i> 5h 30m left</span>
+                        <span class="price">$210.00</span>
+                    </div>
+                    <button class="bid-btn">Place Bid</button>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card">
+                <div class="live-badge">
+                    <div class="live-dot"></div> Live
+                </div>
+                <div class="card-img-container">
+                    <img src="./Static/images/girls (4).jpg" alt="Item Preview" class="card-img">
+                </div>
+                <div class="card-info">
+                    <h4 class="card-title">Cotton Daily (Very Casual)</h4>
+                    <p style="font-size: 0.85rem; color: #888;">Seller: <span style="color: #fff;">SweetPea</span></p>
+                    <div class="card-meta">
+                        <span><i class="far fa-clock"></i> 12m left</span>
+                        <span class="price">$65.00</span>
+                    </div>
+                    <button class="bid-btn">Place Bid</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <div class="hiw-content">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 4rem;">How It Works</h2>
+            <div class="hiw-grid">
+                <div class="hiw-step">
+                    <div class="icon-circle"><i class="fas fa-search"></i></div>
+                    <h3>Discover</h3>
+                    <p>Browse our curated selection of authentic, worn items from verified sellers.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="icon-circle"><i class="fas fa-gavel"></i></div>
+                    <h3>Bid</h3>
+                    <p>Place your bid on the items that ignite your fantasy. Auctions are discreet and secure.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="icon-circle"><i class="fas fa-box-open"></i></div>
+                    <h3>Receive</h3>
+                    <p>Winning items are vacuum-sealed and shipped discreetly to your doorstep.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Start Your Collection</h2>
+            <p>Access exclusive private listings not available to the public.</p>
+            <button class="cta-button"
+                style="background: var(--primary-wine); border-color: var(--primary-wine); color: #fff;">Join
+                Now</button>
+        </div>
+    </section>
+
+    <footer>
+        <span class="footer-logo">PANTIESFAN</span>
+        <div class="footer-links">
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+            <a href="#">Support</a>
+            <a href="#">Sellers</a>
+        </div>
+        <p class="copyright">&copy; 2026 PantiesFan.com. All rights reserved. 18+</p>
+    </footer>
+
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // CTA Reveal
+        gsap.from(".cta-content", {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: ".cta-section",
+                start: "top 70%"
+            }
+        });
+
+        // Hero Parallax
+        gsap.to(".hero-bg", {
+            yPercent: 30,
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        // Hero Content Fade In
+        gsap.to(".hero p", {
+            opacity: 1,
+            y: 0,
+            duration: 1.5,
+            delay: 0.5,
+            ease: "power3.out"
+        });
+
+        // Navigation Background change on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Staggered Flip In for Cards
+        gsap.from(".card", {
+            y: 100,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: ".grid",
+                start: "top 80%"
+            }
+        });
+
+        // Text reveal for manifesto
+        gsap.from(".manifesto-text", {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            scrollTrigger: {
+                trigger: ".manifesto",
+                start: "top 75%"
+            }
+        });
+
+        // How It Works Stagger
+        gsap.to(".hiw-step", {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.3,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: ".how-it-works",
+                start: "top 70%"
+            }
+        });
+
+    </script>
+</body>
+
+</html>
